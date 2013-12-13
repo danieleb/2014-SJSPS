@@ -1,4 +1,4 @@
-% Created 2013-12-13 Fri 14:51
+% Created 2013-12-13 Fri 16:40
 \documentclass[]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -16,7 +16,8 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \tolerance=1000
-\author{Daniele Barchiesi}
+\usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
+\author{Daniele Barchiesi and Mark D. Plumbley}
 \date{\textit{<2013-12-13 Fri>}}
 \title{Classification via dictionary learning: incoherent sub-space modelling for high-dimensional data}
 \hypersetup{
@@ -26,21 +27,16 @@
 \begin{document}
 
 \maketitle
+\input{/Users/daniele/Dropbox/Career/Research/MyPapers/definitions.tex}
+
 \begin{abstract}
 
 \end{abstract}
 
 \section{Introduction}
 \label{sec-1}
-\begin{enumerate}
-\item $\square$ prepare a reading list
-\item $\square$ read papers
-\item $\square$ select relevant publications
-\item $\square$ write introduction and summaries
-\end{enumerate}
 \subsection{Problem definition}
 \label{sec-1-1}
-
 \subsection{Previous work and applications}
 \label{sec-1-2}
 
@@ -54,21 +50,20 @@
 \subsubsection{Features transform for classification}
 \label{sec-2-1-1}
 Feature transforms have been used to model data in an attempt to enhance the tradeoff between generalisation and discrimination, as described in Section \ref{sec-1}.
-Two of the main feature transform techniques include principal component analysis (PCA) and Fisher's linear discriminant analysis (LDA). This section provides a brief description of their rationale.
 
-Let $\{x_m \in R^N\}$ be a set of vectors containing features extracted from $M$ training signals.
+Two of the most common feature transform techniques include principal component analysis (PCA) \cite{Pearson1901On} and Fisher's linear discriminant analysis (LDA) \cite{Duda1973Pa}. This section provides a brief description of their rationale.
 
-\subsubsection{Manifold learning}
-\label{sec-2-1-2}
-
-\subsection{Dictionary learning}
+Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extracted from $M$ training signals.
+\subsection{Manifold learning}
 \label{sec-2-2}
+\subsection{Dictionary learning}
+\label{sec-2-3}
 \subsubsection{Dictionary learning for sparse approximation}
-\label{sec-2-2-1}
+\label{sec-2-3-1}
 \subsubsection{Incoherent dictionary learning}
-\label{sec-2-2-2}
+\label{sec-2-3-2}
 \subsubsection{Dictionary learning for classification}
-\label{sec-2-2-3}
+\label{sec-2-3-3}
 
 \section{Learning incoherent subspaces using iterative projections and rotations}
 \label{sec-3}
@@ -78,5 +73,8 @@ Let $\{x_m \in R^N\}$ be a set of vectors containing features extracted from $M$
 \label{sec-5}
 \section{Conclusions}
 \label{sec-6}
+
+\bibliographystyle{plain}
+\bibliography{/Users/daniele/Dropbox/Career/Research/MyPapers/bibliography.bib}
 % Emacs 24.3.1 (Org mode 8.2.4)
 \end{document}
