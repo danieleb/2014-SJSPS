@@ -1,5 +1,7 @@
 #+TITLE: Classification via dictionary learning: incoherent sub-space modelling for high-dimensional data
 #+DATE: <2013-12-13 Fri>
+#+AUTHOR: Daniele Barchiesi and Mark D. Plumbley
+
 #+OPTIONS:   H:3 num:t toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
 #+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://org$
@@ -8,21 +10,24 @@
 #+LINK_UP:
 #+LINK_HOME:
 #+XSLT:
-#+startup: beamer
 #+LaTex_CLASS: article
 #+LaTex_CLASS_OPTIONS: []
+#+LATEX_HEADER: \usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
+\input{/Users/daniele/Dropbox/Career/Research/MyPapers/definitions.tex}
 
 #+BEGIN_ABSTRACT
 
 #+END_ABSTRACT
 
 * Introduction
-1) [ ] prepare a reading list
-2) [ ] read papers 
-3) [ ] select relevant publications
-4) [ ] write introduction and summaries
+** Todo list							   :noexport:
+*** TODO prepare a reading list
+*** TODO read papers 
+*** TODO select relevant publications
+*** TODO write introduction and summaries
 ** Problem definition
 # we introduce modelling high dimensional signals with lower dimensional subspaces or manifolds to improve tradeoff between discrimination and generalization
+
 ** Previous work and applications
 # we present previous research and relative applications
 ** Outline and main contributions
@@ -32,12 +37,12 @@
 # we detail a few benchmarks and highlight their limitations
 *** Features transform for classification
 Feature transforms have been used to model data in an attempt to enhance the tradeoff between generalisation and discrimination, as described in Section [[Introduction]].
-Two of the main feature transform techniques include principal component analysis (PCA) and Fisher's linear discriminant analysis (LDA). This section provides a brief description of their rationale.
 
-Let $\{x_m \in R^N\}$ be a set of vectors containing features extracted from $M$ training signals.
+Two of the most common feature transform techniques include principal component analysis (PCA) \cite{Pearson1901On} and Fisher's linear discriminant analysis (LDA) \cite{Duda1973Pa}. This section provides a brief description of their rationale.
 
+Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extracted from $M$ training signals.
 
-*** Manifold learning
+** Manifold learning
 ** Dictionary learning
 *** Dictionary learning for sparse approximation
 *** Incoherent dictionary learning
@@ -46,3 +51,6 @@ Let $\{x_m \in R^N\}$ be a set of vectors containing features extracted from $M$
 * Numerical Experiments
 * Discussion
 * Conclusions
+
+\bibliographystyle{plain}
+\bibliography{/Users/daniele/Dropbox/Career/Research/MyPapers/bibliography.bib}
