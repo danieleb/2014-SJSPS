@@ -1,4 +1,4 @@
-% Created 2013-12-14 Sat 15:44
+% Created 2013-12-14 Sat 16:07
 \documentclass[]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
@@ -17,6 +17,9 @@
 \usepackage{hyperref}
 \tolerance=1000
 \usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
+\usepackage{minted}
+\usemintedstyle{emacs}
+\newminted{octave}{fontsize=\footnotesize}
 \author{Daniele Barchiesi and Mark D. Plumbley}
 \date{\textit{<2013-12-13 Fri>}}
 \title{Classification via dictionary learning: incoherent sub-space modelling for high-dimensional data}
@@ -70,8 +73,11 @@ Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extra
 \section{Numerical Experiments}
 \label{sec-4}
 This is an experimental image that describes our results.
-RESULTS:
-
+\begin{verbatim}
+sombrero;
+print -dpdf images/chart.pdf;
+print -dsvg images/chart.svg;
+\end{verbatim}
 
 
 \begin{figure}[htb]

@@ -13,6 +13,10 @@
 #+LaTex_CLASS: article
 #+LaTex_CLASS_OPTIONS: []
 #+LATEX_HEADER: \usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
+#+LaTeX_HEADER: \usepackage{minted}
+#+LaTeX_HEADER: \usemintedstyle{emacs}
+#+LaTeX_HEADER: \newminted{octave}{fontsize=\footnotesize}
+
 \input{/Users/daniele/Dropbox/Career/Research/MyPapers/definitions.tex}
 
 #+BEGIN_ABSTRACT
@@ -50,9 +54,11 @@ Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extra
 * Learning incoherent subspaces using iterative projections and rotations
 * Numerical Experiments
 This is an experimental image that describes our results.
-#+begin_src octave :exports results
+#+name: setup-minted
+#+begin_src octave :exports both :results silent
 sombrero;
 print -dpdf images/chart.pdf;
+print -dsvg images/chart.svg;
 #+end_src
   
 # #+RESULTS:

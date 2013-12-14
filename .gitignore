@@ -3,3 +3,8 @@
 *.dvi
 *.blg
 *.DS_Store
+*.aux
+*.out
+*.pyg
+*.gz
+*.log
