@@ -49,6 +49,19 @@ Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extra
 *** Dictionary learning for classification
 * Learning incoherent subspaces using iterative projections and rotations
 * Numerical Experiments
+This is an experimental image that describes our results.
+#+begin_src octave :exports results
+sombrero;
+print -dpdf images/chart.pdf;
+#+end_src
+  
+# #+RESULTS:
+# : images/chart.pdf
+
+#+CAPTION: This is the caption for the next figure link (or table)
+#+NAME:   fig:SED-HR4049
+  [[./images/chart.pdf]]
+
 * Discussion
 * Conclusions
 
