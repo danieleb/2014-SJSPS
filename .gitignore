@@ -8,3 +8,4 @@
 *.pyg
 *.gz
 *.log
+octave-core
