@@ -54,13 +54,12 @@ Let $\{\Vector{x}_m \in \real^N\}$ be a set of vectors containing features extra
 * Learning incoherent subspaces using iterative projections and rotations
 * Numerical Experiments
 This is an experimental image that describes our results.
-#+name: setup-minted
-#+begin_src octave :exports results :results silent
-[fea, cat] = code/GetFisherIrisDataset()
-scatter3(fea(:,1),fea(:,2),fea(3,:))
-print -dpdf images/fisher.pdf;
-print -dsvg images/fisher.svg;
-#+end_src
+# #+name: setup-minted
+# #+begin_src octave :exports results :results silent
+# [fea, cat] = Code/GetFisherIrisDataset()
+# scatter3(fea(:,1),fea(:,2),fea(3,:))
+# print -dpdf Images/fisher.pdf;
+# #+end_src
   
 #+CAPTION: Sepal length and width for differernt types of Irisis
 #+NAME:   fig:Iris
