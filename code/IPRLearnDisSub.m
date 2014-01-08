@@ -37,7 +37,7 @@ solver	 = SMALL_init_solver('ompbox','omp2',ompParam,false); %solver structure
 
 SMALL.DL.toolbox = toolbox;
 SMALL.DL.name = 'ksvd';
-SMALL.DL.profile = true;
+SMALL.DL.profile = false;
 SMALL.DL.param.data = SMALL.Problem.b;
 SMALL.DL.param.Tdata = nActiveAtoms;
 SMALL.DL.param.dictsize = nAto;
@@ -89,7 +89,7 @@ end
 newTesFea = nan(size(tesFea));
 temp = nan(size(tesFea,2),nCat);
 dis = nan(nCat,1);
-for iTesFea=1:length(tesFea)        %for every data point in the test set
+for iTesFea=1:size(tesFea,1)        %for every data point in the test set
     for iCat=1:nCat                 %for every caegory
         temp(:,iCat) = Project(traSubSpa{iCat}, tesFea(iTesFea,:)');   %projection of datapoint onto subspace
         dis(iCat) = norm(tesFea(iTesFea,:)'-temp(:,iCat));    %distance between original datapoint and projection

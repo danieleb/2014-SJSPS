@@ -1,4 +1,4 @@
-function res = TestTransforms(traFea,tesFea,traCat,tesCat,par)
+function res = TestTransforms(fea,cat,par)
 
 addpath(genpath(pwd)); %add path to matlab search path
 reset(RandStream.getGlobalStream) %reset random stream to reproduce results exactly
@@ -6,7 +6,7 @@ reset(RandStream.getGlobalStream) %reset random stream to reproduce results exac
 %% Parameters and defaults
 if ~exist('par','var') || isempty(par), par = struct; end
 
-def.nAto = 10; %number of atoms
+def.nAto = 2*size(fea,2); %number of atoms (twice overcomplete dictionary)
 def.subSpaRan = 1; %subspace range
 def.perActAto = 50; %percentage of active atoms
 def.nKNNs = 5; %number of nearest neighbours for classification
@@ -14,23 +14,28 @@ def.visu = false;
 
 par = setdefaultoptions(par,def);
 
-if ~exist('traFea','var') || isempty(traFea) || ~exist('tesFea','var') || isempty(tesFea)...
-        || ~exist('traCat','var') || isempty(traCat) || ~exist('tesCat','var') || isempty(tesCat)
-    [meas,species] = GetFisherIrisDataset; %get data from iris dataset
+if ~exist('fea','var') || isempty(fea) || ~exist('cat','var') || isempty(cat)
+    [fea,cat] = GetFisherIrisDataset; %get data from iris dataset
     nDim = 4; %data has 4 dimensions
-    nObs = 150;  %and 150 observations
-    v = randperm(nObs); %select random permutation of observations
-    perTraObs = 70; %percentage of observations used for training
-    nTraObs = floor(nObs*perTraObs/100); %number of training observations
-    traFea = meas(v(1:nTraObs),1:nDim); %training data
-    tesFea = meas(v(nTraObs+1:end),1:nDim); %test data
-    traCat = species(v(1:nTraObs)); %training categories
-    tesCat = species(v(nTraObs+1:end)); %test categories
-    feaMea = mean(traFea); %mean of training categories
-    feaStd = std(traFea); %standard deviation of training categories
-    traFea = (traFea-repmat(feaMea,nTraObs,1))./repmat(feaStd,nTraObs,1); %normalize training data
-    tesFea = (tesFea-repmat(feaMea,nObs-nTraObs,1))./repmat(feaStd,nObs-nTraObs,1); %normalize test data
+    fea = fea(:,1:nDim);
 end
+
+% Divide observations in training and test sets (for visualization)
+[nObs,nDim] = size(fea);
+v = randperm(nObs); %select random permutation of observations
+perTraObs = 70; %percentage of observations used for training
+nTraObs = floor(nObs*perTraObs/100); %number of training observations
+
+traFea = fea(v(1:nTraObs),1:nDim); %training data
+tesFea = fea(v(nTraObs+1:end),1:nDim); %test data
+traCat = cat(v(1:nTraObs)); %training categories
+tesCat = cat(v(nTraObs+1:end)); %test categories
+
+% normalize features
+feaMea = mean(traFea); %mean of training categories
+feaStd = std(traFea); %standard deviation of training categories
+traFea = (traFea-repmat(feaMea,nTraObs,1))./repmat(feaStd,nTraObs,1); %normalize training data
+tesFea = (tesFea-repmat(feaMea,nObs-nTraObs,1))./repmat(feaStd,nObs-nTraObs,1); %normalize test data
 
 %% Classify using original features
 cvPar = cvpartition([traCat;tesCat],'kfold',5);                 %create 5fold partition
@@ -43,30 +48,30 @@ conMat = reshape(sum(conMat),nCat,nCat); %confusion matrix
 mcr = sum(sum(conMat-diag(diag(conMat))))/sum(sum(conMat)); %misclassification ratio
 
 %% Test PCA feature transform
-[pcaTraFea, pcaTesFea] = PCAFeaturesTransform(traFea,tesFea); %compute PCA feature transform
+[pcaTraFea, pcaTesFea] = PCAFeaturesTransform(traFea,tesFea,par); %compute PCA feature transform
 conMatFun = @(traFea,traCat,tesFea,tesCat)PCATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-pcaConMat = crossval(conMatFun,[pcaTraFea;pcaTesFea],nominal([traCat;tesCat]),'partition',cvPar);
+pcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
 pcaConMat = reshape(sum(pcaConMat),nCat,nCat);
 pcaMcr = sum(sum(pcaConMat-diag(diag(pcaConMat))))/sum(sum(pcaConMat));
 
 %% Test SPCA feature transform
-[spcaTraFea, spcaTesFea] = SPCAFeaturesTransform(traFea,tesFea,traCat);
+[spcaTraFea, spcaTesFea] = SPCAFeaturesTransform(traFea,tesFea,traCat,par);
 conMatFun = @(traFea,traCat,tesFea,tesCat)SPCATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-spcaConMat = crossval(conMatFun,[spcaTraFea;spcaTesFea],nominal([traCat;tesCat]),'partition',cvPar);
+spcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
 spcaConMat = reshape(sum(spcaConMat),nCat,nCat);
 spcaMcr = sum(sum(spcaConMat-diag(diag(spcaConMat))))/sum(sum(spcaConMat));
 
 %% Test LDA feature transform
 [ldaTraFea,ldaTesFea] = LDAFeaturesTransform(traFea,tesFea,traCat);
 conMatFun = @(traFea,traCat,tesFea,tesCat)LDATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-ldaConMat = crossval(conMatFun,[ldaTraFea;ldaTesFea],nominal([traCat;tesCat]),'partition',cvPar);
+ldaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
 ldaConMat = reshape(sum(ldaConMat),nCat,nCat);
 ldaMcr = sum(sum(ldaConMat-diag(diag(ldaConMat))))/sum(sum(ldaConMat));
 
 %% Test IPR feature transform
 [subs, iprTraFea, iprTesFea] = IPRLearnDisSub(traFea,tesFea,traCat,par);
 conMatFun = @(traFea,traCat,tesFea,tesCat)IPRTransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-iprConMat = crossval(conMatFun,[iprTraFea;iprTesFea],nominal([traCat;tesCat]),'partition',cvPar);
+iprConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
 iprConMat = reshape(sum(iprConMat),nCat,nCat);
 iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 
@@ -149,12 +154,12 @@ cMat = confusionmat(nominal(tesCat),nominal(knnclassify(tesFea,traFea,traCat,par
 end
 
 function cMat = PCATransformAndClassify(traFea,traCat,tesFea,tesCat,par)
-[traFeaNew,tesFeaNew] = PCAFeaturesTransform(traFea,tesFea);
+[traFeaNew,tesFeaNew] = PCAFeaturesTransform(traFea,tesFea,par);
 cMat = confusionmat(nominal(tesCat),nominal(knnclassify(tesFeaNew,traFeaNew,traCat,par.nKNNs)));
 end
 
 function cMat = SPCATransformAndClassify(traFea,traCat,tesFea,tesCat,par)
-[traFeaNew,tesFeaNew] = SPCAFeaturesTransform(traFea,tesFea,traCat);
+[traFeaNew,tesFeaNew] = SPCAFeaturesTransform(traFea,tesFea,traCat,par);
 cMat = confusionmat(nominal(tesCat),nominal(knnclassify(tesFeaNew,traFeaNew,traCat,par.nKNNs)));
 end
 

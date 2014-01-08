@@ -26,7 +26,7 @@ if par.subSpaRan
 else
     %find a number of pc that explain thresh% of the variance in the data or
     %min 2d
-    thrIdx = 1:find(thresh-cumsum(explained)>=100*eps); %use this to avoid machine errors
+    thrIdx = 1:find(par.thresh-cumsum(explained)>=100*eps); %use this to avoid machine errors
     if length(thrIdx) < 2, thrIdx = [1,2]; end
     
     %transformed training features

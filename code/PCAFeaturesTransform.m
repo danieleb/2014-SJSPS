@@ -1,4 +1,4 @@
-function [newTraFea, newTesFea] = PCAFeaturesTransform(traFea,tesFea,~,par)
+function [newTraFea, newTesFea] = PCAFeaturesTransform(traFea,tesFea,par)
 if ~nargin, unitTest; return; end
 if ~exist('par','var') || isempty(par), par=struct; end
 def.thresh = 95;
@@ -16,8 +16,8 @@ else
 end
 Project = @(Phi,x) Phi*pinv(Phi)*x;
 %transformed training features
-newTraFea = Project(D,traFea);
-newTesFea = Project(D,tesFea);
+newTraFea = Project(D,traFea')';
+newTesFea = Project(D,tesFea')';
 
 function unitTest
 clear, clc

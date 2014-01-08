@@ -23,11 +23,6 @@ if (isfield(DL.param,'dictsize'))    % this superceedes the size determined by i
     dictsize = DL.param.dictsize;
 end
 
-if (size(sig,2) < dictsize)
-    error('Number of training signals is smaller than number of atoms to train');
-end
-
-
 % initialize the dictionary %
 
 % todo: check second if statement
@@ -43,7 +38,16 @@ if (isfield(DL.param,'initdict')) && ~isempty(DL.param.initdict);
 else
     data_ids = find(colnorms_squared(sig) > 1e-6);   % ensure no zero data elements are chosen
     perm = randperm(length(data_ids));
-    dico = sig(:,data_ids(perm(1:dictsize)));
+    if (size(sig,2) < dictsize) %if the number of atoms is larger than the number of signals
+        dico = zeros(size(sig,1),dictsize);
+        for iAto=1:dictsize %for every atom
+            ato = sig(:,data_ids(randperm(length(data_ids),1))); %select a random signal
+            ato = ato + randn(size(ato))*norm(ato)*0.1; %perturb the atom with Gaussian noise
+            dico(:,iAto) = ato;
+        end
+    else
+        dico = sig(:,data_ids(perm(1:dictsize)));
+    end
 end
 
 % flow: 'sequential' or 'parallel'. If sequential, the residual is updated
