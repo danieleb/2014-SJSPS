@@ -1,7 +1,16 @@
 function TestClassSubSpaRan
+% add path and compile omp if not already done
+addpath(genpath(pwd));
+A = dir('omp/');
+if length(strfind([A(:).name],'ompmex'))<3 %if the number of files containing 'ompmex' is less than 2 compile
+    cd omp/
+    make
+    cd ..
+end
+
 subSpaRanks = 1:4;
-datasets    = {'coloncancer'};
-datfun = @GetColonCancerDataset;
+datasets    = {'fisher'};
+datfun = @GetFisherIrisDataset;
 par.visu = false;
 for iDat=1:length(datasets)
     fprintf('\nobtaining dataset %s... ',datasets{iDat});
