@@ -10,13 +10,14 @@ def.nAto = 10; %number of atoms
 def.subSpaRan = 1; %subspace range
 def.perActAto = 50; %percentage of active atoms
 def.nKNNs = 5; %number of nearest neighbours for classification
+def.visu = false;
 
 par = setdefaultoptions(par,def);
 
 if ~exist('traFea','var') || isempty(traFea) || ~exist('tesFea','var') || isempty(tesFea)...
         || ~exist('traCat','var') || isempty(traCat) || ~exist('tesCat','var') || isempty(tesCat)
     [meas,species] = GetFisherIrisDataset; %get data from iris dataset
-    nDim = 3; %data has 4 dimensions
+    nDim = 4; %data has 4 dimensions
     nObs = 150;  %and 150 observations
     v = randperm(nObs); %select random permutation of observations
     perTraObs = 70; %percentage of observations used for training
@@ -63,7 +64,7 @@ ldaConMat = reshape(sum(ldaConMat),nCat,nCat);
 ldaMcr = sum(sum(ldaConMat-diag(diag(ldaConMat))))/sum(sum(ldaConMat));
 
 %% Test IPR feature transform
-[~, iprTraFea, iprTesFea] = IPRLearnDisSub(traFea,tesFea,traCat,par);
+[subs, iprTraFea, iprTesFea] = IPRLearnDisSub(traFea,tesFea,traCat,par);
 conMatFun = @(traFea,traCat,tesFea,tesCat)IPRTransformAndClassify(traFea,traCat,tesFea,tesCat,par);
 iprConMat = crossval(conMatFun,[iprTraFea;iprTesFea],nominal([traCat;tesCat]),'partition',cvPar);
 iprConMat = reshape(sum(iprConMat),nCat,nCat);
@@ -74,44 +75,45 @@ iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 % J1 = @(fea,cat) trace(pinv(ClassificationDiscriminant.fit(fea,cat).Sigma)*ClassificationDiscriminant.fit(fea,cat).BetweenSigma);
 % J2 = @(fea,cat) trace(ClassificationDiscriminant.fit(fea,cat).BetweenSigma)/trace(ClassificationDiscriminant.fit(fea,cat).Sigma);
 % J3 = @(fea,cat) log(abs(det(ClassificationDiscriminant.fit(fea,cat).BetweenSigma))) - ClassificationDiscriminant.fit(fea,cat).LogDetSigma;
-
 mets = {'none','PCA','SPCA','LDA','IPR'};
-nMet = length(mets);
-sqrNMet = ceil(sqrt(nMet));
-% Display features
-close all
-for iMet=1:nMet
-    switch iMet
-        case 1
-            fea = traFea;
-            mat = conMat;
-            err = mcr;
-        case 2
-            fea = [pcaTraFea zeros(size(pcaTraFea,1),1)];
-            tesFea = [pcaTesFea zeros(size(pcaTesFea,1),1)];
-            mat = pcaConMat;
-            err = pcaMcr;
-        case 3
-            fea = [spcaTraFea zeros(size(spcaTraFea,1),1)];
-            tesFea = [spcaTesFea zeros(size(spcaTesFea,1),1)];
-            mat = spcaConMat;
-            err = spcaMcr;
-        case 4
-            fea = ldaTraFea;
-            tesFea = ldaTesFea;
-            mat = ldaConMat;
-            err = ldaMcr;
-        case 5
-            fea = iprTraFea;
-            tesFea = iprTesFea;
-            mat = iprConMat;
-            err = iprMcr;
+if par.visu
+    nMet = length(mets);
+    sqrNMet = ceil(sqrt(nMet));
+    % Display features
+    close all
+    for iMet=1:nMet
+        switch mets{iMet}
+            case 'none'
+                fea = traFea;
+                mat = conMat;
+                err = mcr;
+            case 'PCA'
+                fea = [pcaTraFea zeros(size(pcaTraFea,1),1)];
+                tesFea = [pcaTesFea zeros(size(pcaTesFea,1),1)];
+                mat = pcaConMat;
+                err = pcaMcr;
+            case 'SPCA'
+                fea = [spcaTraFea zeros(size(spcaTraFea,1),1)];
+                tesFea = [spcaTesFea zeros(size(spcaTesFea,1),1)];
+                mat = spcaConMat;
+                err = spcaMcr;
+            case 'LDA'
+                fea = ldaTraFea;
+                tesFea = ldaTesFea;
+                mat = ldaConMat;
+                err = ldaMcr;
+            case 'IPR'
+                fea = iprTraFea;
+                tesFea = iprTesFea;
+                mat = iprConMat;
+                err = iprMcr;
+        end
+        figure(1), subplot(sqrNMet,sqrNMet,iMet)
+        ScatterFeatures(fea,tesFea,traCat,tesCat,mets{iMet},subs);
+        %     figure(2), subplot(sqrNMet,sqrNMet,iMet)
+        %     DispConfMat(mat,unique([traCat;tesCat])), colormap jet;
+        %     title([mets{iMet} ' features transforms. MCR: ' num2str(err)])
     end
-   figure(1), subplot(sqrNMet,sqrNMet,iMet)
-   ScatterFeatures(fea,tesFea,traCat,tesCat,mets{iMet});
-%    figure(2), subplot(sqrNMet,sqrNMet,iMet)
-%    DispConfMat(mat,unique([traCat;tesCat])), colormap jet;
-%    title([mets{iMet} ' features transforms. MCR: ' num2str(err)])
 end
 
 res.mcr = [mcr pcaMcr spcaMcr ldaMcr iprMcr]';
@@ -120,26 +122,26 @@ res.traFea = {traFea,pcaTraFea,spcaTraFea,ldaTraFea,iprTraFea};
 res.tesFea = {tesFea,pcaTesFea,spcaTesFea,ldaTesFea,iprTesFea};
 end
 
-function ScatterFeatures(traFea,tesFea,traCat,tesCat,method)
-traFea = NormalizeFeatures(traFea);
-if size(traFea,2)<2
-    gscatter(traFea(:,1), traFea(:,1), traCat,'rgb','osd');
-else
-    uniCat = unique(traCat);
-    col = {'r','g','b','y','k','c'};
-    mar = {'o','s','d','x','^','>'};
-    for iCat=1:length(uniCat)
-        ind = strcmp(uniCat(iCat),traCat);
-        scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),100,col{iCat},'Marker',mar{iCat});
-        hold on
-        ind = strcmp(uniCat(iCat),tesCat);
-        scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),100,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat});
+function ScatterFeatures(traFea,tesFea,traCat,tesCat,method,subs)
+uniCat = unique(traCat);
+col = {'r','g','b','y','k','c'};
+mar = {'o','s','d','x','^','>'};
+size = 150;
+for iCat=1:length(uniCat) %for every category
+    ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
+    scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker',mar{iCat}); %scatter data
+    hold on
+    if strcmp(method,'IPR')
+        scale = 3;
+        quiver3(0,0,0,scale*subs{iCat}(1),scale*subs{iCat}(2),scale*subs{iCat}(3));
+        quiver3(0,0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2),-scale*subs{iCat}(3));
     end
+    ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
+    scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
 end
 title(['features transform: ' method]);
 xlabel('Sepal length')
 ylabel('Sepal width')
-
 end
 
 function cMat = TransformAndClassify(traFea,traCat,tesFea,tesCat,par)

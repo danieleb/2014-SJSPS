@@ -1,9 +1,12 @@
-function [newTraFea, newTesFea] = SPCAFeaturesTransform(traFea,tesFea,cat,thresh)
+function [newTraFea, newTesFea] = SPCAFeaturesTransform(traFea,tesFea,cat,par)
 %supervised pca implementation. For details, please refer to Barshan et al.
 %, Pattern Recognition, 44(2011) 1357--1371
 
 if ~nargin, unitTest; return; end
-if ~exist('thresh','var') || isempty(thresh), thresh = 100; end
+if ~exist('par','var') || isempty(par), par = struct; end
+def.thresh = 100;
+def.subSpaRan = [];
+par = setdefaultoptions(par,def);
 
 %compute centering matrix
 X = traFea';
@@ -18,13 +21,17 @@ Q = X*H*L*H*X';
 %compute principal components and weights
 [D,~,explained] = pcacov(Q); %use pcacov because Q is a covariance matrix
 
-%find a number of pc that explain thresh% of the variance in the data or
-%min 2d
-thrIdx = 1:find(thresh-cumsum(explained)>=100*eps); %use this to avoid machine errors
-if length(thrIdx) < 2, thrIdx = [1,2]; end
-
-%transformed training features
-U = D(:,thrIdx);
+if par.subSpaRan
+    U = D(:,1:par.subSpaRan);
+else
+    %find a number of pc that explain thresh% of the variance in the data or
+    %min 2d
+    thrIdx = 1:find(thresh-cumsum(explained)>=100*eps); %use this to avoid machine errors
+    if length(thrIdx) < 2, thrIdx = [1,2]; end
+    
+    %transformed training features
+    U = D(:,thrIdx);
+end
 newTraFea = X'*U; %return n observations along the rows of matrix
 newTesFea = tesFea*U;
 

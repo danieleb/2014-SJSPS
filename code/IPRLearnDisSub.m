@@ -16,10 +16,8 @@ def.subSpaRan = 50;                     %rank of incoherent subspaces
 def.nAto = nCat*nDim;                   %number of atoms
 def.nIte = 1;                           %number of DL iterations
 
+def.mu = sqrt((par.nAto-nDim)/(nDim*(par.nAto-1))); %mutual coherence
 par = setdefaultoptions(par,def);       %set parameters
-if ~isfield(par,'mu') || isempty(par.mu)
-    par.mu = sqrt((par.nAto-nDim)/(nDim*(par.nAto-1)));
-end
 
 nAto  = par.nAto;                %number of atoms in the dictionary
 perActAto = par.perActAto;   %percentage of active atoms
@@ -62,11 +60,11 @@ Xtra = solver.solution;
 
 [q,C] = ComputeAtomsCategories(Xtra,traCat);  %atom's contributions to categories
 for iCat=1:nCat     %for every category
-    [~,ind] = sort(C(:,iCat),'descend');    %sort atoms according to contributions to category
-    traSubSpa{iCat} = D(:,ind(1:subSpaRan));%select subset of atoms in the dictionary as subspace
+    [~,idx] = sort(C(:,iCat),'descend');    %sort atoms according to contributions to category
+    traSubSpa{iCat} = D(:,idx(1:subSpaRan));%select subset of atoms in the dictionary as subspace
     c=1;                                    %counter
     while rank(traSubSpa{iCat})<subSpaRan   %if and until rank of subspace is less than predefined rank
-        traSubSpa{iCat} = [traSubSpa{iCat}, D(:,ind(subSpaRan+c))];  %add next atom
+        traSubSpa{iCat} = [traSubSpa{iCat}, D(:,idx(subSpaRan+c))];  %add next atom
         c = c+1;
     end
 end
@@ -80,10 +78,10 @@ for iCat=1:nCat
     for jCat=1:nCat
         catIdx{iCat} = strcmp(cellstr(traCat),char(uniCat(iCat)));     %indexes corresponding to iCat category
         tem = Project(traSubSpa{jCat},traFea(catIdx{iCat},:)')';       %Projection of signals of iCat catogory onto jCat subspace
-        dis(iCat,jCat) = norm(traFea(catIdx{iCat},:)-tem,'fro');       %distance
+        dis(iCat,jCat) = norm(traFea(catIdx{iCat},:)-tem,'fro');       %distance between data belonging to class iCat and their projection onto subspace jCat
     end
     [~, idx] = min(dis(iCat,:));
-    newTraFea(catIdx{iCat},:) = Project(traSubSpa{idx},traFea(catIdx{iCat},:)')';
+    newTraFea(catIdx{iCat},:) = Project(traSubSpa{idx},traFea(catIdx{iCat},:)')'; % new features are projection of old ones onto nearest subspace
 end
 
 %% Test phase
@@ -96,8 +94,8 @@ for iTesFea=1:length(tesFea)        %for every data point in the test set
         temp(:,iCat) = Project(traSubSpa{iCat}, tesFea(iTesFea,:)');   %projection of datapoint onto subspace
         dis(iCat) = norm(tesFea(iTesFea,:)'-temp(:,iCat));    %distance between original datapoint and projection
     end
-    [~, ind] = min(dis);                    %find the nearest subspace to the datapoint
-    newTesFea(iTesFea,:) = temp(:,ind)';    %transformed feature is projection of feature onto nearest subspace
+    [~, idx] = min(dis);                    %find the nearest subspace to the datapoint
+    newTesFea(iTesFea,:) = Project(traSubSpa{idx},tesFea(iTesFea,:)')'; % new features are projection of old ones onto nearest subspace
 end
     
 end

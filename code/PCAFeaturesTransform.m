@@ -1,17 +1,23 @@
-function [newTraFea, newTesFea] = PCAFeaturesTransform(traFea,tesFea,~,thresh)
+function [newTraFea, newTesFea] = PCAFeaturesTransform(traFea,tesFea,~,par)
 if ~nargin, unitTest; return; end
-if ~exist('thresh','var') || isempty(thresh), thresh = 95; end
+if ~exist('par','var') || isempty(par), par=struct; end
+def.thresh = 95;
+def.subSpaRan = [];
+par = setdefaultoptions(par,def);
+
 %compute principal components and weights
 [D,~,~,~,explained] = pca(traFea);
-X = traFea*D';
+if par.subSpaRan
+    D = D(:,1:par.subSpaRan);
+else
 %find a number of pc that explain 95% of the variance in the data
-thrIdx = find(cumsum(explained)>=thresh,1);
+    thrIdx = find(cumsum(explained)>=par.thresh,1);
+    D = D(:,1:thrIdx);
+end
+Project = @(Phi,x) Phi*pinv(Phi)*x;
 %transformed training features
-newTraFea = X(:,1:thrIdx)*D(1:thrIdx,1:thrIdx);
-%transform test features using the dictionary learned on the
-%training features
-XTes = tesFea*D';                   %pca coefficients
-newTesFea = XTes(:,1:thrIdx)*D(1:thrIdx,1:thrIdx);
+newTraFea = Project(D,traFea);
+newTesFea = Project(D,tesFea);
 
 function unitTest
 clear, clc
