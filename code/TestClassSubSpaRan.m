@@ -1,9 +1,9 @@
 function TestClassSubSpaRan
 % add path and compile omp if not already done
 addpath(genpath(pwd));
-A = dir('omp/');
+A = dir('SMALL/OMP_Private');
 if length(strfind([A(:).name],'ompmex'))<3 %if the number of files containing 'ompmex' is less than 2 compile
-    cd omp/
+    cd 'SMALL/OMP_Private'
     make
     cd ..
 end
