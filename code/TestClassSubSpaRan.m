@@ -8,22 +8,32 @@ if length(strfind([A(:).name],'ompmex'))<3 %if the number of files containing 'o
     cd ..
 end
 
-subSpaRanks = 1:4;
-datasets    = {'fisher'};
-datfun = @GetFisherIrisDataset;
+% parse dataset functions
+datfun = {@GetFisherIrisDataset,@GetBalanceDataset,...
+    @GetParkinsonsDataset,@GetSonarDataset,@GetUSPSDataset};
+datasets    = cell(length(datfun),1);
+for i=1:length(datfun)
+    s= functions(datfun{i});
+    datasets{i} = regexprep(s.function,'Get(\w+)Dataset','$1');
+end
+
+% parameters
 par.visu = false;
+
 for iDat=1:length(datasets)
     fprintf('\nobtaining dataset %s... ',datasets{iDat});
-    [fea,cat] = datfun();
+    [fea,cat] = datfun{iDat}();                 %get features and categories
     if ~isfloat(fea), fea = double(fea); end     %transform features to float if needed
     fprintf('done\n');
+    feaDim = size(fea,2);
+    subSpaRanks = TrimEnd(ceil(linspace(1,feaDim,5)));
     for iSSR = 1:length(subSpaRanks)
         fprintf('testing transforms using subspaces of rank %d... ',subSpaRanks(iSSR));
-        par.subSpaRan = iSSR;
-        res(iSSR) = TestTransforms(fea,cat,par);
+        par.subSpaRan = subSpaRanks(iSSR);
+        res(iDat,iSSR) = TestTransforms(fea,cat,par);
         fprintf('done\n');
     end
-    mcrs = [res(:).mcr]';
+    mcrs = [res(iDat,:).mcr]';
     figure, PlotMCRs(mcrs(:,2:end));
 end
 
@@ -34,3 +44,11 @@ legend(methodNames);
 xlabel('Sub-space rank');
 ylabel('misclassification ratio');
 grid on
+
+function v = TrimEnd(v)
+% trim the end of a linspace vector if it contains equal values
+ind = find(v==max(v));
+if length(ind) > 1
+    v(ind(2:end)) = [];
+end
+

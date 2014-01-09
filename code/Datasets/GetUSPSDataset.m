@@ -1,4 +1,4 @@
-function [fea,cat] = GetUSPS
+function [fea,cat] = GetUSPSDataset
 
 load usps_resampled
 
