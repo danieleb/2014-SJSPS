@@ -5,6 +5,8 @@ addpath(genpath(pwd)); %add path to matlab search path
 %% Parameters and defaults
 if ~exist('par','var') || isempty(par), par = struct; end
 
+options = statset('UseParallel',true); %set option to use parallel computing
+
 def.nAto = 2*size(fea,2); %number of atoms (twice overcomplete dictionary)
 def.subSpaRan = 1; %subspace range
 def.perActAto = 50; %percentage of active atoms
@@ -40,7 +42,7 @@ tesFea = (tesFea-repmat(feaMea,nObs-nTraObs,1))./repmat(feaStd,nObs-nTraObs,1); 
 cvPar = cvpartition([traCat;tesCat],'kfold',5);                 %create 5fold partition
 
 conMatFun = @(traFea,traCat,tesFea,tesCat)TransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-conMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar); %compute crossvalidation results on original features
+conMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar,'options',options); %compute crossvalidation results on original features
 
 nCat = length(unique(nominal([traCat;tesCat]))); %number of categories
 conMat = reshape(sum(conMat),nCat,nCat); %confusion matrix
@@ -49,28 +51,28 @@ mcr = sum(sum(conMat-diag(diag(conMat))))/sum(sum(conMat)); %misclassification r
 %% Test PCA feature transform
 [pcaTraFea, pcaTesFea] = PCAFeaturesTransform(traFea,tesFea,par); %compute PCA feature transform
 conMatFun = @(traFea,traCat,tesFea,tesCat)PCATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-pcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
+pcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar,'options',options);
 pcaConMat = reshape(sum(pcaConMat),nCat,nCat);
 pcaMcr = sum(sum(pcaConMat-diag(diag(pcaConMat))))/sum(sum(pcaConMat));
 
 %% Test SPCA feature transform
 [spcaTraFea, spcaTesFea] = SPCAFeaturesTransform(traFea,tesFea,traCat,par);
 conMatFun = @(traFea,traCat,tesFea,tesCat)SPCATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-spcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
+spcaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar,'options',options);
 spcaConMat = reshape(sum(spcaConMat),nCat,nCat);
 spcaMcr = sum(sum(spcaConMat-diag(diag(spcaConMat))))/sum(sum(spcaConMat));
 
 %% Test LDA feature transform
 [ldaTraFea,ldaTesFea] = LDAFeaturesTransform(traFea,tesFea,traCat);
 conMatFun = @(traFea,traCat,tesFea,tesCat)LDATransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-ldaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
+ldaConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar,'options',options);
 ldaConMat = reshape(sum(ldaConMat),nCat,nCat);
 ldaMcr = sum(sum(ldaConMat-diag(diag(ldaConMat))))/sum(sum(ldaConMat));
 
 %% Test IPR feature transform
 [subs, iprTraFea, iprTesFea] = IPRLearnDisSub(traFea,tesFea,traCat,par);
 conMatFun = @(traFea,traCat,tesFea,tesCat)IPRTransformAndClassify(traFea,traCat,tesFea,tesCat,par);
-iprConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar);
+iprConMat = crossval(conMatFun,[traFea;tesFea],nominal([traCat;tesCat]),'partition',cvPar,'options',options);
 iprConMat = reshape(sum(iprConMat),nCat,nCat);
 iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 
