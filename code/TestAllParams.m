@@ -37,7 +37,7 @@ for iDat=1:nDataSets
     fprintf('done\n');
     feaDim = size(fea,2);
     subSpaRanks = TrimEnd(ceil(linspace(1,feaDim,5)));
-    for iSSR = 1:nSubSpaRan
+    for iSSR = 1:length(subSpaRanks)
         fprintf('testing transforms using subspaces of rank %d... ',subSpaRanks(iSSR));
         par.subSpaRan = subSpaRanks(iSSR);
         nns = [1,5,floor(size(fea,1)/length(unique(cat)))]; %number of knn neighbours
