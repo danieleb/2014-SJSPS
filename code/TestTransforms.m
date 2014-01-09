@@ -1,7 +1,6 @@
 function res = TestTransforms(fea,cat,par)
 
 addpath(genpath(pwd)); %add path to matlab search path
-reset(RandStream.getGlobalStream) %reset random stream to reproduce results exactly
 
 %% Parameters and defaults
 if ~exist('par','var') || isempty(par), par = struct; end

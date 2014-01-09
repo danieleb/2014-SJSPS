@@ -8,9 +8,9 @@ end
 %% Parameters and defaults
 if ~exist('par','var') || isempty(par), par = struct; end   %parameters
 
-def.nIte  = 20;     %number of iterations
+def.nIte  = 30;     %number of iterations
 def.eps   = 1e-6;   %tolerance level
-def.alpha = .7;     %mix weight
+def.alpha = .5;     %mix weight
 def.vis   = false;  %visualize results (only for 2 or 3 dimensional datasets)
 def.ver   = false;  %verose output
 
@@ -102,6 +102,8 @@ if iIter<par.nIte
     mus(iIter:end) = mus(iIter);
     srs(iIter:end) = srs(iIter);
 end
+% figure(1), plot(mus,srs)
+% fprintf('\n%f , %f',mus(end),srs(end));
 end
 
 function dic  = ProjectSpec(G,nDim)

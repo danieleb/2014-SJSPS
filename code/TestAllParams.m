@@ -1,4 +1,4 @@
-function TestClassSubSpaRan
+function res = TestAllParams
 
 reset(RandStream.getGlobalStream) %reset random stream to reproduce results exactly
 
@@ -23,21 +23,38 @@ end
 % parameters
 par.visu = false;
 
-for iDat=1:length(datasets)
+%pre-allocate output structure
+nDataSets = length(datasets);
+nSubSpaRan = 5;
+nNNN = 3;
+nMus = 2;
+res(nDataSets,nSubSpaRan,nNNN,nMus).mcr = nan;
+res(nDataSets,nSubSpaRan,nNNN,nMus).mets = nan;
+for iDat=1:nDataSets
     fprintf('\nobtaining dataset %s... ',datasets{iDat});
     [fea,cat] = datfun{iDat}();                 %get features and categories
     if ~isfloat(fea), fea = double(fea); end    %transform features to float if needed
     fprintf('done\n');
     feaDim = size(fea,2);
     subSpaRanks = TrimEnd(ceil(linspace(1,feaDim,5)));
-    for iSSR = 1:length(subSpaRanks)
+    for iSSR = 1:nSubSpaRan
         fprintf('testing transforms using subspaces of rank %d... ',subSpaRanks(iSSR));
         par.subSpaRan = subSpaRanks(iSSR);
-        res(iDat,iSSR) = TestTransforms(fea,cat,par);
+        nns = [1,5,floor(size(fea,1)/length(unique(cat)))]; %number of knn neighbours
+        for inn=1:nNNN
+            par.nKNNs = nns(inn);
+            mus = [0,1];
+            for imu=1:nMus
+                par.mu = mus(imu);
+                tmp = TestTransforms(fea,cat,par);
+                res(iDat,iSSR,inn,imu).mcr = tmp.mcr;
+                res(iDat,iSSR,inn,imu).mets = tmp.mets;
+            end
+        end
         fprintf('done\n');
     end
-    mcrs = [res(iDat,:).mcr]';
-    figure, PlotMCRs(mcrs(:,2:end),subSpaRanks,datasets{iDat});
+%     mcrs = [res(iDat,:).mcr]';
+%     figure, PlotMCRs(mcrs(:,2:end),subSpaRanks,datasets{iDat});
 end
 
 function PlotMCRs(mcrs,subSpaRanks,dataset)
