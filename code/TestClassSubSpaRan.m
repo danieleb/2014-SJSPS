@@ -10,7 +10,7 @@ end
 
 % parse dataset functions
 datfun = {@GetFisherIrisDataset,@GetBalanceDataset,...
-    @GetParkinsonsDataset,@GetSonarDataset,@GetUSPSDataset};
+    @GetParkinsonsDataset,@GetSonarDataset};
 datasets    = cell(length(datfun),1);
 for i=1:length(datfun)
     s= functions(datfun{i});
@@ -23,7 +23,7 @@ par.visu = false;
 for iDat=1:length(datasets)
     fprintf('\nobtaining dataset %s... ',datasets{iDat});
     [fea,cat] = datfun{iDat}();                 %get features and categories
-    if ~isfloat(fea), fea = double(fea); end     %transform features to float if needed
+    if ~isfloat(fea), fea = double(fea); end    %transform features to float if needed
     fprintf('done\n');
     feaDim = size(fea,2);
     subSpaRanks = TrimEnd(ceil(linspace(1,feaDim,5)));
@@ -34,15 +34,16 @@ for iDat=1:length(datasets)
         fprintf('done\n');
     end
     mcrs = [res(iDat,:).mcr]';
-    figure, PlotMCRs(mcrs(:,2:end));
+    figure, PlotMCRs(mcrs(:,2:end),subSpaRanks,datasets{iDat});
 end
 
-function PlotMCRs(mcrs)
+function PlotMCRs(mcrs,subSpaRanks,dataset)
 methodNames = {'PCA','SPCA','LDA','IPR'};
-plot(mcrs,'o-','MarkerSize',10)
+plot(subSpaRanks,mcrs,'o-','MarkerSize',10)
 legend(methodNames);
 xlabel('Sub-space rank');
 ylabel('misclassification ratio');
+title(sprintf('Classification of %s dataset',dataset));
 grid on
 
 function v = TrimEnd(v)
