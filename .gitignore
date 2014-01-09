@@ -9,4 +9,5 @@
 *.gz
 *.log
 octave-core
-*mexmaci64
+*.mexmaci64
+*.mexa64
