@@ -9,8 +9,10 @@ St = Sb + Sw;                               %Total scatter matrix
 J = @(W) trace(pinv(W'*St*W)*(W'*Sb*W));    %as a function of projection matrix
 
 [D,X] = eig(pinv(St)*Sb);                   %compute evd
-idx = diag(real(X))>1e-8;                         %find non-zero eigenvalues
-W = real(D(:, idx));                              %select corresponding eigenvectors
+idx = diag(real(X))>1e-8;                   %find non-zero eigenvalues
+W = real(D(:, idx));                        %select corresponding eigenvectors
+W = real(D(:,1:length(unique(traCat))-1));
+% assert(size(W,2)==(length(unique(traCat))-1));
 
 newTraFea = (W*pinv(W)*traFea')';           %project data onto subspace spanned by eigenvectors
 newTesFea = (W*pinv(W)*tesFea')';

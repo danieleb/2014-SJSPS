@@ -4,10 +4,10 @@ addpath(genpath(pwd)); %add path to matlab search path
 
 %% Parameters and defaults
 if ~exist('fea','var') || isempty(fea) || ~exist('cat','var') || isempty(cat)
-    [fea,cat] = GetUSPSDataset([1,3,8]);
+    [fea,cat] = GetFisherIrisDataset;
     if isnumeric(cat), cat = cellstr(num2str(cat)); end
-%     nDim = 4; %data has 4 dimensions
-%     fea = fea(:,1:nDim);
+    nDim = 3; %data has 4 dimensions
+    fea = fea(:,1:nDim);
 end
 
 if ~exist('par','var') || isempty(par), par = struct; end
@@ -84,7 +84,7 @@ iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 % J1 = @(fea,cat) trace(pinv(ClassificationDiscriminant.fit(fea,cat).Sigma)*ClassificationDiscriminant.fit(fea,cat).BetweenSigma);
 % J2 = @(fea,cat) trace(ClassificationDiscriminant.fit(fea,cat).BetweenSigma)/trace(ClassificationDiscriminant.fit(fea,cat).Sigma);
 % J3 = @(fea,cat) log(abs(det(ClassificationDiscriminant.fit(fea,cat).BetweenSigma))) - ClassificationDiscriminant.fit(fea,cat).LogDetSigma;
-mets = {'none','PCA','SPCA','LDA','IPR'};
+mets = {'none','IPR'};
 if par.visu
     nMet = length(mets);
     sqrNMet = ceil(sqrt(nMet));
@@ -97,13 +97,17 @@ if par.visu
                 mat = conMat;
                 err = mcr;
             case 'PCA'
-                traFea = [pcaTraFea zeros(size(pcaTraFea,1),1)];
-                tesFea = [pcaTesFea zeros(size(pcaTesFea,1),1)];
+                if size(pcaTraFea,2)~=3
+                    traFea = [pcaTraFea zeros(size(pcaTraFea,3-size(pcaTraFea,2)),1)];
+                    tesFea = [pcaTesFea zeros(size(pcaTesFea,3-size(pcaTraFea,2)),1)];
+                end
                 mat = pcaConMat;
                 err = pcaMcr;
             case 'SPCA'
-                traFea = [spcaTraFea zeros(size(spcaTraFea,1),1)];
-                tesFea = [spcaTesFea zeros(size(spcaTesFea,1),1)];
+                if size(spcaTraFea,2)~=3
+                    traFea = [spcaTraFea zeros(size(spcaTraFea,1),3-size(spcaTraFea,2))];
+                    tesFea = [spcaTesFea zeros(size(spcaTesFea,1),3-size(spcaTraFea,2))];
+                end
                 mat = spcaConMat;
                 err = spcaMcr;
             case 'LDA'
@@ -139,7 +143,7 @@ function ScatterFeatures2D(traFea,tesFea,traCat,tesCat,method,subs)
 uniCat = unique(traCat);
 col = {'r','g','b','y','k','c'};
 mar = {'o','s','d','x','^','>'};
-size = 150;
+size = 100;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
     scatter(traFea(ind,1),traFea(ind,2),size,col{iCat},'Marker',mar{iCat}); %scatter data
@@ -161,7 +165,7 @@ function ScatterFeatures(traFea,tesFea,traCat,tesCat,method,subs)
 uniCat = unique(traCat);
 col = {'r','g','b','y','k','c'};
 mar = {'o','s','d','x','^','>'};
-size = 10;
+size = 50;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
     scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker',mar{iCat}); %scatter data
