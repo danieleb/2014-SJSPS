@@ -17,7 +17,7 @@ options = statset('UseParallel',true); %set option to use parallel computing
 def.nAto = 2*size(fea,2); %number of atoms (twice overcomplete dictionary)
 def.subSpaRan = 1; %subspace range
 def.perActAto = 50; %percentage of active atoms
-def.nKNNs = 1; %number of nearest neighbours for classification
+def.nKNNs = 5; %number of nearest neighbours for classification
 def.visu = true;
 
 par = setdefaultoptions(par,def);

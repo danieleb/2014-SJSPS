@@ -13,7 +13,7 @@ nDim = size(traFea,2);                  %dimension of features
 toolbox   = 'SMALL_incoherentDL';		%dictionary learning toolbox
 
 def.subSpaRan = 50;                     %rank of incoherent subspaces
-def.nAto = nCat*nDim;                   %number of atoms
+def.nAto = 2*nDim;                      %number of atoms
 def.nIte = 1;                           %number of DL iterations
 
 def.mu = sqrt((par.nAto-nDim)/(nDim*(par.nAto-1))); %mutual coherence
@@ -113,7 +113,7 @@ gscatter(traFea(:,1), traFea(:,2), traCat,'rgb','osd');
 xlabel('Sepal length');
 ylabel('Sepal width');
 
-newTraFea = IPRFeaturesTransform(traFea,tesFea,traCat);
+[traSubSpa,newTraFea,newTesFea] = IPRLearnDisSub(traFea,tesFea,traCat);
 size(newTraFea,2);
 figure
 if size(newTraFea,2)<2
