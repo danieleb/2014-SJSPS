@@ -12,7 +12,7 @@ if length(strfind([A(:).name],'ompmex'))<3 %if the number of files containing 'o
 end
 
 % parse dataset functions
-datfun = {@GetFisherIrisDataset,@GetBalanceDataset,...
+datfun = {@GetToyExampleDataset,@GetFisherIrisDataset,@GetBalanceDataset,...
     @GetParkinsonsDataset,@GetSonarDataset};
 datasets    = cell(length(datfun),1);
 for i=1:length(datfun)
