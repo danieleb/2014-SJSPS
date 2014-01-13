@@ -12,7 +12,7 @@ end
 
 if ~exist('par','var') || isempty(par), par = struct; end
 
-options = statset('UseParallel',true); %set option to use parallel computing
+options = statset('UseParallel',false); %set option to use parallel computing
 
 def.nAto = 2*size(fea,2); %number of atoms (twice overcomplete dictionary)
 def.subSpaRan = 1; %subspace range
@@ -84,26 +84,29 @@ iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 % J1 = @(fea,cat) trace(pinv(ClassificationDiscriminant.fit(fea,cat).Sigma)*ClassificationDiscriminant.fit(fea,cat).BetweenSigma);
 % J2 = @(fea,cat) trace(ClassificationDiscriminant.fit(fea,cat).BetweenSigma)/trace(ClassificationDiscriminant.fit(fea,cat).Sigma);
 % J3 = @(fea,cat) log(abs(det(ClassificationDiscriminant.fit(fea,cat).BetweenSigma))) - ClassificationDiscriminant.fit(fea,cat).LogDetSigma;
-mets = {'none','IPR'};
+mets = {'none','S-PCA','LDA','S-IPR'};
 if par.visu
     nMet = length(mets);
-    sqrNMet = ceil(sqrt(nMet));
-    % Display features
+    sqrNMet = ceil(sqrt(nMet-1));
+
     close all
     for iMet=1:nMet
         switch mets{iMet}
             case 'none'
+                figure(2)
                 traFea = traFea;
                 mat = conMat;
                 err = mcr;
             case 'PCA'
+                figure(2)
                 if size(pcaTraFea,2)~=3
                     traFea = [pcaTraFea zeros(size(pcaTraFea,3-size(pcaTraFea,2)),1)];
                     tesFea = [pcaTesFea zeros(size(pcaTesFea,3-size(pcaTraFea,2)),1)];
                 end
                 mat = pcaConMat;
                 err = pcaMcr;
-            case 'SPCA'
+            case 'S-PCA'
+                figure(2)
                 if size(spcaTraFea,2)~=3
                     traFea = [spcaTraFea zeros(size(spcaTraFea,1),3-size(spcaTraFea,2))];
                     tesFea = [spcaTesFea zeros(size(spcaTesFea,1),3-size(spcaTraFea,2))];
@@ -111,17 +114,19 @@ if par.visu
                 mat = spcaConMat;
                 err = spcaMcr;
             case 'LDA'
+                figure(2)
                 traFea = ldaTraFea;
                 tesFea = ldaTesFea;
                 mat = ldaConMat;
                 err = ldaMcr;
-            case 'IPR'
+            case 'S-IPR'
+                figure(2)
                 traFea = iprTraFea;
                 tesFea = iprTesFea;
                 mat = iprConMat;
                 err = iprMcr;
         end
-        figure(1), subplot(sqrNMet,sqrNMet,iMet)
+        subplot(sqrNMet,sqrNMet,iMet)
         if size(fea,2) == 3
             ScatterFeatures(traFea,tesFea,traCat,tesCat,mets{iMet},subs);
         elseif size(fea,2) == 2
@@ -141,12 +146,12 @@ end
 
 function ScatterFeatures2D(traFea,tesFea,traCat,tesCat,method,subs)
 uniCat = unique(traCat);
-col = {'r','g','b','y','k','c'};
-mar = {'o','s','d','x','^','>'};
-size = 100;
+col = {'k','r','b','y','k','c'};
+mar = {'o','o','o','x','^','>'};
+size = 10;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
-    scatter(traFea(ind,1),traFea(ind,2),size,col{iCat},'Marker',mar{iCat}); %scatter data
+    scatter(traFea(ind,1),traFea(ind,2),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
     hold on
     if strcmp(method,'IPR')
         scale = 3;
@@ -154,18 +159,18 @@ for iCat=1:length(uniCat) %for every category
         quiver(0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2));
     end
     ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
-    scatter(tesFea(ind,1),tesFea(ind,2),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
+    scatter(tesFea(ind,1),tesFea(ind,2),size,col{iCat},'Marker',mar{iCat}); %scatter data
 end
-title(['features transform: ' method]);
+title(['feature transform: ' method]);
 % xlabel('Sepal length')
 % ylabel('Sepal width')
 end
 
 function ScatterFeatures(traFea,tesFea,traCat,tesCat,method,subs)
 uniCat = unique(traCat);
-col = {'r','g','b','y','k','c'};
-mar = {'o','s','d','x','^','>'};
-size = 50;
+col = {'k','r','b','y','k','c'};
+mar = {'o','o','o','x','^','>'};
+size = 30;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
     scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker',mar{iCat}); %scatter data
@@ -178,9 +183,9 @@ for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
     scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
 end
-title(['features transform: ' method]);
-xlabel('Sepal length')
-ylabel('Sepal width')
+title(['feature transform: ' method]);
+% xlabel('Sepal length')
+% ylabel('Sepal width')
 end
 
 function cMat = TransformAndClassify(traFea,traCat,tesFea,tesCat,par)

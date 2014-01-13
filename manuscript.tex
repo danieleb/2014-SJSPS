@@ -83,22 +83,51 @@ A further dimensionalty reduction may be performed when dealing with high dimens
 Two of the main feature transform techniques include principal component analysis (\Acronym{pca}) \cite{Pearson1901On} and Fisher's linear discriminant analysis (\Acronym{lda}) \cite{Duda1973Pa}.
 
 \subsubsection{\Acronym{pca}}
-Let $\curlyb{\fea_{\iFea} \in \real^{\nDim}}_{\iFea=1}^{\nFea}$ be a set of vectors containing features extracted from $\nFea$ training signals. The goal of \Acronym{pca} is to learn an orthonormal set of basis functions $\curlyb{\atom_{\iAto} \in \ambient^{\nDim}}_{\iAto=1}^{\nDim}$ such that $ \norm{\atom_{\iAtom}}{2}=1$ and $\inner{\atom_{i}}{\atom_{j}}=0 \; \forall i\neq j$ that are placed along the columns of a so-called \emph{dictionary} $\Dic\in\real^{\nDim\times\nDim}$. The bases are optimised from the data to identify their principal components, that is, the sub-spaces that retain the maximum variance of the features. First, the eigenvalue decomposition of the outer product $\Matrix{X}\Transpose{\Matrix{X}} = \Matrix{Q}\Matrix{\Lambda}\Transpose{\Matrix{Q}}$ is computed. Then, the largest $\nComponents$ eigenvalues are selected from the matrix $\Matrix{\Lambda}$, and the corresponding eigenvectors are   
+
+Let $\curlyb{\fea_{\iFea} \in \real^{\nDim}}_{\iFea=1}^{\nFea}$ be a set of vectors containing features extracted from $\nFea$ training signals. The goal of \Acronym{pca} is to learn an orthonormal set of basis functions $\curlyb{\atom_{\iAto} \in \ambient^{\nDim}}_{\iAto=1}^{\nDim}$ such that $ \norm{\atom_{\iAtom}}{2}=1$ and $\inner{\atom_{i}}{\atom_{j}}=0 \; \forall i\neq j$ that are placed along the columns of a so-called \emph{dictionary} $\Dic\in\real^{\nDim\times\nDim}$. The bases are optimised from the data to identify their principal components, that is, the sub-spaces that retain the maximum variance of the features.
+
+To compute the dictionary, the eigenvalue decomposition of the outer product
+\begin{equation}
+\Matrix{X}\Transpose{\Matrix{X}} = \Matrix{Q}\Matrix{\Lambda}\Transpose{\Matrix{Q}}
+\end{equation}
+is first calculated. Then, the $\nComponents$ eigenvectors corresponding to the $\nComponents$ largest eigenvalues are selected from the matrix $\Matrix{Q}$, and scaled to unit $\ell_{2}$ norm to form the dictionary $\Dic$.
 
 Let $\Spa\definition\Dic_{1:\nComponents}\in\ambient^{\nDim\times\nComponents}$ denote the sub-dictionary constructed from the $\nComponents<\nDim$ principal components of the dataset. A new set of transformed features $\newFea_{\Acronym{pca}} = \Spa\Transpose{\Spa}\fea$ is computed by projecting the data onto the sub-space spanned by the columns of $\Dic_{1:\nComponents}$ (that is, onto the $\nComponents$-dimensional principal sub-space). This operation reduces the dimensionality of the features by projecting them onto a linear subspace embedded in $\real^{\nDim}$. It is an unsupervised technique that does not exploit knowledge about the classes associated with the training set, but implicitly relies in the assumption that the principal component directions encode relevant differences between classes.
 
 \subsubsection{\Acronym{lda}}
-In contrast, \Acronym{lda} is a supervised method for feature transform whose objective is to explicitly maximise the separability of classes in the transformed domain. The within-classes scatter matrix is defined to measure how features belonging to the same class are clustered around their mean vector (the vector obtained by averaging all observations associated with a given category), and the  between-classes scatter matrix is defined to measure the distances between the mean vectors. A square linear transform $\Matrix{M} \in \real^{\nDim\times\nDim}$ is optimised to obtain a new set of features $\newFea_{\Acronym{lda}}=\Matrix{M}\fea$ according to an objective that promotes features belonging to the same class to be near each other (according to a Euclidean distance), and far apart from features belonging to different classes. \Acronym{lda} explicitly seeks to enhance the discriminative power of features, but does not perform dimensionality reduction.
+In contrast, \Acronym{lda} is a supervised method for feature transform whose objective is to explicitly maximise the separability of classes in the transformed domain. 
 
+Let $\obsSet_{\iUniCat}$ be a set indexing features extracted from data belonging to the $\iUniCat$-th category, let
+\begin{equation}
+\average{\fea}_{\iUniCat} \definition \frac{1}{\abs{\obsSet_{\iUniCat}}}\sum_{\iObs\in\obsSet_{\iUniCat}} \fea_{\iObs}
+\end{equation} 
+be the $\iUniCat$-th class feature centroid, and $\average{\fea}\definition\sum_{\iObs=1}^{\nObs}\fea_{\iObs}$ the centroid of the features extracted from the entire training dataset. The between-classes scatter matrix 
+\begin{equation}
+\Matrix{S_{b}} \definition \sum_{\iUniCat=1}^{\nUniCat}\abs{\obsSet_{\iUniCat}}\roundb{\average{\fea}_{\iUniCat}-\average{\fea}}\Transpose{\roundb{\average{\fea}_{\iUniCat}-\average{\fea}}}
+\end{equation} 
+is defined to measure the mutual distances between the centroids of different classes, while the within-classes scatter matrix 
+\begin{equation}
+\Matrix{S}_{w}\definition \sum_{\iUniCat=1}^{\nUniCat}\sum_{\iObs\in\obsSet_{\iUniCat}}\roundb{\fea_{\iObs}-\average{\fea}_{\iUniCat}}\Transpose{\roundb{\fea_{\iObs}-\average{\fea}_{\iUniCat}}}
+\end{equation}
+quantifies the distances between features belonging to the same class.
+To maximise an objective function $\objective(\Matrix{W})\definition\frac{\abs{\Transpose{\Matrix{W}}\Matrix{S}_{b}\Matrix{W}}}{\abs{\Transpose{\Matrix{W}}\Matrix{S}_{w}\Matrix{W}}}$ that promotes features belonging to the same class to be near each other and far away from features belonging to other classes, the eigenvalue decomposition of the matrix
+\begin{equation}
+\pseudoinverse{\Matrix{S}_{w}}\Matrix{S}_{b} = \Matrix{Q}\Matrix{\Lambda}\Transpose{\Matrix{Q}}
+\end{equation}
+is computed, and the features $\fea$ are projected onto the space spanned by its $(\nUniCat-1)$ eigenvectors corresponding to the largest $(\nUniCat-1)$ eigenvalues.
+
+\Acronym{lda} explicitly seeks to enhance the discriminative power of features by optimising the objective $\objective$.
 \subsection{Supervised dimensionality reduction}
 \subsubsection{Supervised PCA}
 Related works that extend \Acronym{pca} include the supervised \Acronym{pca} (\Acronym{s-pca}) proposed by Barshan et al. \cite{Barshan2011Su}. \Acronym{s-pca} is based on the theory of reproducing kernel Hilbert spaces (\Acronym{rkhs}) (that are spaces of functions which satisfy certain properties and map elements from an arbitrary set to the set of complex numbers) \cite{Aronszajn:1950}, and on the so-called Hilbert-Schmidt independence criterion (\Acronym{hsic})\cite{gretton2005measuring}. The \Acronym{hsic} is used to estimates the statistical dependence of two random variables based on the fact that this quantity is related to the correlation of functions belonging to their respective \Acronym{rkhs}. While \Acronym{hsic} is defined in terms of the probability density function of the two random variables,  empirical estimates of \Acronym{hsic} can be obtained from finite sequences of their realisations. The empirical \Acronym{hsic} can be used in turn to construct an objective function that maximises the dependence between the two variables. Hence, this strategy is adopted within the context of classification to maximise the statistical dependence between a transformed feature $\newFea_{\Acronym{s-pca}}$ and its corresponding category $\cat$.
 
-In practice, \Acronym{s-pca} differs from \Acronym{pca} in that it calculates the eigenvalue decomposition of a matrix $\Matrix{Q}$ defined as follows:
+In practice, \Acronym{s-pca} differs from \Acronym{pca} in that it calculates the eigenvalue decomposition of a matrix $\Matrix{R}$ defined as follows:
 \begin{equation}
-\Matrix{Q} \definition \Matrix{X}\Matrix{H}\Matrix{L}\Matrix{H}\Transpose{\Matrix{X}}
+\Matrix{R} \definition \Matrix{X}\Matrix{H}\Matrix{L}\Matrix{H}\Transpose{\Matrix{X}}
 \end{equation}
-were $\Matrix{H} \definition \Matrix{I} - \\Vector{e}\Transpose{\Vector{e}}$ is a \emph{centring} matrix and $\Matrix{L} \definition \Vector{\cat}\Transpose{\Vector{\cat}}$ is the kernel matrix of the class variable that is constructed by computing the outer product of the vectors resulting from assigning different numerical values to each category.
+were $\Matrix{H} \definition \Matrix{I} - \Vector{e}\Transpose{\Vector{e}}$ is a \emph{centring} matrix and $\Matrix{L} \definition \Vector{\cat}\Transpose{\Vector{\cat}}$ is the kernel matrix of the class variable that is constructed by computing the outer product of the vectors resulting from assigning different numerical values to each category. 
+
+Other methods for supervised dimensionality reduction include metric learning algorithms \cite{xing2002distance}, sufficient dimensionality reduction \cite{li1991sliced} and supervised principal components \cite{Bair06predictionby}.
 
 \subsection{Incoherent subspace learning and other related work}
 
@@ -305,6 +334,26 @@ The subspace $\optimal{\iCat}$ can be directly used as an estimator of the categ
 \end{equation}
 where $\NewFeas$ represents the matrix of training features after the transform stage. This latter approach is especially suitable when working with a large number of classes in a space of relatively small dimension (as in the numerical experiment presented in Section \ref{sec:fisher} where $\nCat=3$ and $\nDim=3$), as in this case multiple classes might be assigned to the same subspace.
 \section{Numerical Experiments}\label{sec:ne}
+\subsection{Feature visualisation}
+To illustrate the \Acronym{s-ipr} algorithm for feature transform, we first run visualisation experiments depicting how different feature transform methods act on training and test data.
+\subsubsection{Synthetic data}
+Figure \ref{fig:toy} displays a total of $1500$ synthetic features in $\real^{2}$ belonging to $3$ different classes that we generated for this experiment. For each class, first we draw values distributed uniformly in the interval $\squareb{-1,1}$ and assign them to the first component of the features (the \emph{x} coordinate). Then, we add Gaussian noise with variance $0.1$ to the second component (the \emph{y} coordinate), and we rotate the resulting data by the angles $\theta_{0}=0$, $\theta_{1}=\pi/4$ and $\theta_{3}=\pi/2$ for the $3$ classes respectively. This way, features belonging to different classes are clustered along different one-dimensional sub-spaces of $\real^{2}$.
+\begin{figure}
+\includegraphics[width=\textwidth]{./Code/Datasets/GetToyExampleDataset.pdf}
+\caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
+\end{figure}
+
+Figure
+\begin{figure}
+\includegraphics[width=\textwidth]{./Code/toyvisu.pdf}
+\caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
+\end{figure}
+\subsubsection{Iris dataset}
+\begin{figure}
+\includegraphics[width=\textwidth]{./Code/fishervisu.pdf}
+\caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
+\end{figure}
+
 \subsection{Classifying the \Acronym{fisheriris} dataset}\label{sec:fisher}
 To illustrate the \Acronym{s-ipr} algorithm for feature transform, we apply it to the $\Acronym{fisheriris}$ dataset \cite{Fisher1936Th}. This contains data for the classification of $150$ iris specimens into the classes \emph{setosa}, \emph{versicolor} and \emph{virginica}. The features corresponding to measurements on the sepal length, sepal width and petal length for the flowers are stored in the matrix $\Feas\in\ambient^{3\times 150}$.  As a pre-processing step, we subtract the mean and normalise the standard deviation of the features to avoid large variations or offsets in any of the dimensions of the data.
 
