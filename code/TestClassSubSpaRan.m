@@ -12,7 +12,7 @@ if length(strfind([A(:).name],'ompmex'))<3 %if the number of files containing 'o
 end
 
 % parse dataset functions
-datfun = {@GetToyExampleDataset,@GetFisherIrisDataset,@GetBalanceDataset,...
+datfun = {@GetFisherIrisDataset,@GetBalanceDataset,...
     @GetParkinsonsDataset,@GetSonarDataset};
 datasets    = cell(length(datfun),1);
 for i=1:length(datfun)
@@ -37,17 +37,8 @@ for iDat=1:length(datasets)
         fprintf('done\n');
     end
     mcrs = [res(iDat,:).mcr]';
-    figure, PlotMCRs(mcrs(:,2:end),subSpaRanks,datasets{iDat});
+    figure, PlotMCRs(mcrs,subSpaRanks,datasets{iDat});
 end
-
-function PlotMCRs(mcrs,subSpaRanks,dataset)
-methodNames = {'PCA','SPCA','LDA','IPR'};
-plot(subSpaRanks,mcrs,'o--','MarkerSize',10)
-legend(methodNames);
-xlabel('Sub-space rank');
-ylabel('misclassification ratio');
-title(sprintf('Classification of %s dataset',dataset));
-set(gca,'YGrid','on','XGrid','off','XTick',subSpaRanks);
 
 function v = TrimEnd(v)
 % trim the end of a linspace vector if it contains equal values

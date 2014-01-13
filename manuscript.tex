@@ -15,9 +15,10 @@
 \usepackage{epsfig}
 \usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
 \usepackage[boxruled,linesnumbered]{algorithm2e}
-\usepackage{subfig,graphicx}
+\usepackage{subfigure,graphicx}
 \usepackage{setspace}
 \usepackage{enumitem}
+
 
 %%%%%%%%%%%%%%%%%%%%%DEFINITIONS%%%%%%%%%%%%%%%%%%
 \input{definitions.tex}	
@@ -346,12 +347,26 @@ Figure \ref{fig:toy} displays a total of $1500$ synthetic features in $\real^{2}
 Figure
 \begin{figure}
 \includegraphics[width=\textwidth]{./Code/toyvisu.pdf}
-\caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
+\caption{\label{fig:toyNewFea}Feature transform applied to the synthetic data in Figure \ref{fig:toy}. Different colours correspond to different classes, `+' and `o' markers represent samples taken from the training and test set respectively.}
 \end{figure}
 \subsubsection{Iris dataset}
 \begin{figure}
+\includegraphics[width=\textwidth]{./Code/Datasets/GetFisherIrisDataset.pdf}
+\caption{\label{fig:fisher3} First three features of the `iris' dataset depicting measurements of sepal length, sepal with and petal length of three iris species.}
+\end{figure}
+\begin{figure}
 \includegraphics[width=\textwidth]{./Code/fishervisu.pdf}
-\caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
+\caption{\label{fig:toyNewFea}Feature transform applied to the iris data in Figure \ref{fig:fisher3}. Different colours correspond to different classes, `+' and `o' markers represent samples taken from the training and test set respectively.}
+\end{figure}
+
+\subsection{Classification results}
+\begin{figure}
+\centering
+\subfigure{\includegraphics[width=.45\textwidth]{Code/Util/fisheriris.pdf}}
+\subfigure{\includegraphics[width=.45\textwidth]{Code/Util/balance.pdf}}
+\subfigure{\includegraphics[width=.45\textwidth]{Code/Util/parkinsons.pdf}}
+\subfigure{\includegraphics[width=.45\textwidth]{Code/Util/sonar.pdf}}
+\caption{}
 \end{figure}
 
 \subsection{Classifying the \Acronym{fisheriris} dataset}\label{sec:fisher}
@@ -362,12 +377,7 @@ The dictionary learning is run using the \Acronym{SMALLBox} toolbox and the Inco
 The proposed method is used to learn $\nDimSub=1$ dimensional sub-spaces, and is  compared to \Acronym{pca} with a number of components $\nComponents=2$ and to \Acronym{lda}. Figure \ref{fig:fisher} shows the results of the experiment. The original features show a clear cluster corresponding to the setosa class, and overlapping data for the other two classes. Applying \Acronym{pca} reduces the dimensionality of the $3$-dimensional features to a rank $2$ principal sub-space, but worsens the separation between classes. Both \Acronym{lda} and the proposed method are able to improve the separation of the three classes, but in remarkably different ways: while the former optimises the linear separability of different classes, features derived from \Acronym{s-ipr} are projected onto low-dimensional discriminative subspaces.
 
 To assess the classification performance of the various techniques, we created a random $5$-fold partition of the training set used for cross-validation, and classified the transformed features using \Acronym{knn} with $5$ neighbours. The misclassification rate $\Acronym{mcr}$ defined as the number of misclassified samples divided by the total number of samples is displayed for the various methods in the first row of Table \ref{tab:fisher}. \Acronym{s-ipr} and \Acronym{lda} are both able to attain a $7\%$ misclassification error, improving on the $10\%$ obtained on the original features. The worst result is achieved by \Acronym{pca}, whose dimensionality reduction has the effect of mixing together features belonging to different classes, and achieves an error of $44\%$.
-\begin{figure*}[!tb]
-\begin{center}
-%\includegraphics[width=\textwidth]{fisher3d.pdf}
-\caption{\label{fig:fisher}Features transform for the fisheriris dataset. Red circular markers correspond to setosa, green square markers to versicolor and blue diamond markers to virginica.}
-\end{center}
-\end{figure*}
+
 \begin{table}[!htb]
 \begin{center}
 \begin{tabular}{|l|c|c|c|c|}
@@ -390,11 +400,6 @@ Analysing the \Acronym{mcr} as a function of the parameters $\nAto$, $\nDimSub$ 
 \section{Conclusion}\label{sec:end}
 We have presented the \Acronym{s-ipr} algorithm for learning incoherent subspaces, and employed it as a feature transform method in the context of supervised classification. The encouraging experimental results obtained on the \Acronym{fisheriris} and the \Acronym{usps} datasets suggest that the proposed algorithm can overcome limitations of standard feature transforms methods, making it a viable tool for machine learning research and practice. A better theoretical understanding of the performance of \Acronym{s-ipr} (especially in relation to other methods for subspace and manifold learning), and further validations of the technique on challenging classification problems constitute the most promising avenues for future research.
 
-% References should be produced using the bibtex program from suitable
-% BiBTeX files (here: strings, refs, manuals). The IEEEbib.bst bibliography
-% style file from IEEE produces unsorted bibliography list.
-% -------------------------------------------------------------------------
 \bibliographystyle{IEEEbib}
 \bibliography{bibliography.bib}
-
 \end{document}

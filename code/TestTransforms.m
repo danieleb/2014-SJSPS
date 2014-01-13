@@ -4,10 +4,10 @@ addpath(genpath(pwd)); %add path to matlab search path
 
 %% Parameters and defaults
 if ~exist('fea','var') || isempty(fea) || ~exist('cat','var') || isempty(cat)
-    [fea,cat] = GetFisherIrisDataset;
+    [fea,cat] = GetToyExampleDataset;
     if isnumeric(cat), cat = cellstr(num2str(cat)); end
-    nDim = 3; %data has 4 dimensions
-    fea = fea(:,1:nDim);
+%     nDim = 3; %data has 4 dimensions
+%     fea = fea(:,1:nDim);
 end
 
 if ~exist('par','var') || isempty(par), par = struct; end
@@ -84,7 +84,7 @@ iprMcr = sum(sum(iprConMat-diag(diag(iprConMat))))/sum(sum(iprConMat));
 % J1 = @(fea,cat) trace(pinv(ClassificationDiscriminant.fit(fea,cat).Sigma)*ClassificationDiscriminant.fit(fea,cat).BetweenSigma);
 % J2 = @(fea,cat) trace(ClassificationDiscriminant.fit(fea,cat).BetweenSigma)/trace(ClassificationDiscriminant.fit(fea,cat).Sigma);
 % J3 = @(fea,cat) log(abs(det(ClassificationDiscriminant.fit(fea,cat).BetweenSigma))) - ClassificationDiscriminant.fit(fea,cat).LogDetSigma;
-mets = {'none','S-PCA','LDA','S-IPR'};
+mets = {'PCA','S-PCA','LDA','S-IPR'};
 if par.visu
     nMet = length(mets);
     sqrNMet = ceil(sqrt(nMet-1));
@@ -102,6 +102,9 @@ if par.visu
                 if size(pcaTraFea,2)~=3
                     traFea = [pcaTraFea zeros(size(pcaTraFea,3-size(pcaTraFea,2)),1)];
                     tesFea = [pcaTesFea zeros(size(pcaTesFea,3-size(pcaTraFea,2)),1)];
+                else
+                    traFea = pcaTraFea;
+                    tesFea = pcaTesFea;
                 end
                 mat = pcaConMat;
                 err = pcaMcr;
@@ -151,7 +154,7 @@ mar = {'o','o','o','x','^','>'};
 size = 10;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
-    scatter(traFea(ind,1),traFea(ind,2),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
+    scatter(traFea(ind,1),traFea(ind,2),size,col{iCat},'Marker','+'); %scatter data
     hold on
     if strcmp(method,'IPR')
         scale = 3;
@@ -159,7 +162,7 @@ for iCat=1:length(uniCat) %for every category
         quiver(0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2));
     end
     ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
-    scatter(tesFea(ind,1),tesFea(ind,2),size,col{iCat},'Marker',mar{iCat}); %scatter data
+    scatter(tesFea(ind,1),tesFea(ind,2),size,col{iCat},'Marker','o'); %scatter data
 end
 title(['feature transform: ' method]);
 % xlabel('Sepal length')
@@ -173,7 +176,7 @@ mar = {'o','o','o','x','^','>'};
 size = 30;
 for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
-    scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker',mar{iCat}); %scatter data
+    scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker','+'); %scatter data
     hold on
     if strcmp(method,'IPR')
         scale = 3;
@@ -181,7 +184,7 @@ for iCat=1:length(uniCat) %for every category
         quiver3(0,0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2),-scale*subs{iCat}(3));
     end
     ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
-    scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),size,col{iCat},'Marker',mar{iCat},'MarkerFaceColor',col{iCat}); %scatter data
+    scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),size,col{iCat},'Marker','o'); %scatter data
 end
 title(['feature transform: ' method]);
 % xlabel('Sepal length')
