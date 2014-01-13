@@ -1,14 +1,72 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{Duda1973Pa}
-R.~Duda and P.~E. Hart.
-\newblock {\em Pattern classification and scene analysis}.
+R.~Duda and P.~E. Hart,
+\newblock {\em Pattern classification and scene analysis},
 \newblock Wiley and Sons, 1973.
 
 \bibitem{Pearson1901On}
-K.~Pearson.
-\newblock On lines and planes of closest fit to systems of points in space.
+K.~Pearson,
+\newblock ``On lines and planes of closest fit to systems of points in space,''
 \newblock {\em The London, Edinburgh and Dublin Philosophical Magazine and
-  Journal of Science, Sixth Series}, 2:559--572, 1901.
+  Journal of Science, Sixth Series}, vol. 2, pp. 559--572, 1901.
+
+\bibitem{Barshan2011Su}
+E.~Barshan, A.~Ghodsi, Z.~Azimifar, and M.~Z. Jahromi,
+\newblock ``Supervised principal component analysis: Visualization,
+  classification and regression on subspaces and submanifolds,''
+\newblock {\em Pattern Recognition}, vol. 44, no. 7, pp. 1357--1371, 2011.
+
+\bibitem{Aronszajn:1950}
+N.~Aronszajn,
+\newblock ``Theory of reproducing kernels,''
+\newblock {\em Transactions of the American Mathematical Society}, vol. 68, no.
+  3, pp. 337--404, 1950.
+
+\bibitem{gretton2005measuring}
+Arthur Gretton, Olivier Bousquet, Alex Smola, and Bernhard Sch{\"o}lkopf,
+\newblock ``Measuring statistical dependence with hilbert-schmidt norms,''
+\newblock in {\em Algorithmic learning theory}. Springer, 2005, pp. 63--77.
+
+\bibitem{Van-Der-Maaten2009Di}
+L.~Van Der~Maaten, E.~Postma, and J.~Van Den~Herik,
+\newblock ``Dimensionality reduction: {A} comparative review,''
+\newblock Tech. {R}ep., TiCC, Tilburg University, 2009.
+
+\bibitem{Elhamifar2013Sp}
+E.~Elhamifar and R.~Vidal,
+\newblock ``Sparse subspace clustering: algorithm, theory, and applications,''
+\newblock To appear in IEEE Transactions on Pattern Analysis and Machine
+  Intelligence, 2013.
+
+\bibitem{Elad2010Sp}
+M.~Elad,
+\newblock {\em Sparse and redundant representations},
+\newblock Springer, 2010.
+
+\bibitem{Rubinstein2010Di}
+R.~Rubinstein, A.~Bruckstein, and M.~Elad,
+\newblock ``Dictionaries for sparse representation modeling,''
+\newblock {\em Proceedings of the IEEE}, vol. 98, no. 6, pp. 1045--1057, Jun.
+  2010.
+
+\bibitem{Barchiesi2013Le}
+D.~Barchiesi and M.~D. Plumbley,
+\newblock ``Learning incoherent dictionaries for sparse approximation using
+  iterative projections and rotations,''
+\newblock {\em IEEE Trans. on Signal Processing}, vol. 61, no. 8, pp.
+  2055--2065, Apr. 2013.
+
+\bibitem{Fisher1936Th}
+R.~A. Fisher,
+\newblock ``The use of multiple measurements in taxonomic problems,''
+\newblock {\em Annuals of Eugenics}, vol. 7, pp. 179--188, 1936.
+
+\bibitem{Strohmer2003Gr}
+T.~Strohmer and R.~W.~Jr. Heath,
+\newblock ``Grassmannian frames with applications to coding and
+  communication,''
+\newblock {\em Applied and Computational Harmonic Analysis}, vol. 14, no. 3,
+  pp. 257--275, 2003.
 
 \end{thebibliography}
