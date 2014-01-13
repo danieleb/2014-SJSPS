@@ -29,7 +29,7 @@ for iDat=1:length(datasets)
     if ~isfloat(fea), fea = double(fea); end    %transform features to float if needed
     fprintf('done\n');
     feaDim = size(fea,2);
-    subSpaRanks = TrimEnd(ceil(linspace(1,feaDim,5)));
+    subSpaRanks = rmd(ceil(linspace(1,feaDim,20)));
     for iSSR = 1:length(subSpaRanks)
         fprintf('testing transforms using subspaces of rank %d... ',subSpaRanks(iSSR));
         par.subSpaRan = subSpaRanks(iSSR);
@@ -38,12 +38,5 @@ for iDat=1:length(datasets)
     end
     mcrs = [res(iDat,:).mcr]';
     figure, PlotMCRs(mcrs,subSpaRanks,datasets{iDat});
-end
-
-function v = TrimEnd(v)
-% trim the end of a linspace vector if it contains equal values
-ind = find(v==max(v));
-if length(ind) > 1
-    v(ind(2:end)) = [];
 end
 
