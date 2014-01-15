@@ -11,3 +11,4 @@
 octave-core
 *.mexmaci64
 *.mexa64
+*.mat

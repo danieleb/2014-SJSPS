@@ -4,10 +4,10 @@ addpath(genpath(pwd)); %add path to matlab search path
 
 %% Parameters and defaults
 if ~exist('fea','var') || isempty(fea) || ~exist('cat','var') || isempty(cat)
-    [fea,cat] = GetToyExampleDataset;
+    [fea,cat] = GetFisherIrisDataset;
     if isnumeric(cat), cat = cellstr(num2str(cat)); end
-%     nDim = 3; %data has 4 dimensions
-%     fea = fea(:,1:nDim);
+    nDim = 3; %data has 4 dimensions
+    fea = fea(:,1:nDim);
 end
 
 if ~exist('par','var') || isempty(par), par = struct; end
@@ -15,9 +15,9 @@ if ~exist('par','var') || isempty(par), par = struct; end
 options = statset('UseParallel',false); %set option to use parallel computing
 
 def.nAto = 2*size(fea,2); %number of atoms (twice overcomplete dictionary)
-def.subSpaRan = 1; %subspace range
+def.subSpaRan = 2; %subspace range
 def.perActAto = 50; %percentage of active atoms
-def.nKNNs = 5; %number of nearest neighbours for classification
+def.nKNNs = 1; %number of nearest neighbours for classification
 def.visu = true;
 
 par = setdefaultoptions(par,def);
@@ -178,13 +178,19 @@ for iCat=1:length(uniCat) %for every category
     ind = strcmp(uniCat(iCat),traCat); %find indexes of data in the trainig set belonging to iCat category
     scatter3(traFea(ind,1),traFea(ind,2),traFea(ind,3),size,col{iCat},'Marker','+'); %scatter data
     hold on
-    if strcmp(method,'IPR')
-        scale = 3;
-        quiver3(0,0,0,scale*subs{iCat}(1),scale*subs{iCat}(2),scale*subs{iCat}(3));
-        quiver3(0,0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2),-scale*subs{iCat}(3));
-    end
+%     if strcmp(method,'IPR')
+%         scale = 3;
+%         quiver3(0,0,0,scale*subs{iCat}(1),scale*subs{iCat}(2),scale*subs{iCat}(3));
+%         quiver3(0,0,0,-scale*subs{iCat}(1),-scale*subs{iCat}(2),-scale*subs{iCat}(3));
+%     end
     ind = strcmp(uniCat(iCat),tesCat); %find indexes of data in the test set belonging to iCat category
     scatter3(tesFea(ind,1),tesFea(ind,2),tesFea(ind,3),size,col{iCat},'Marker','o'); %scatter data
+    if strcmp(method,'S-IPR')
+        drawplane(traFea(ind,:)',col{iCat});
+    end
+end
+if ~strcmp(method,'S-IPR')
+    drawplane(traFea');
 end
 title(['feature transform: ' method]);
 % xlabel('Sepal length')

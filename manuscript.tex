@@ -8,16 +8,18 @@
 %	Mile End Road, London E1 4NS, UK}
 
 %%%%%%%%%%%%%%%%%%%%%%PACKAGES%%%%%%%%%%%%%%%%%%%%%
-\usepackage{amsmath,graphicx}
+\usepackage{amsmath}
 \usepackage[english]{babel}
 \usepackage[applemac]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage{epsfig}
 \usepackage{amsfonts,amssymb,amsmath,amsthm,bm}
 \usepackage[boxruled,linesnumbered]{algorithm2e}
 \usepackage{subfigure,graphicx}
 \usepackage{setspace}
+\usepackage{hyperref}
 \usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{epstopdf}
 
 
 %%%%%%%%%%%%%%%%%%%%%DEFINITIONS%%%%%%%%%%%%%%%%%%
@@ -65,7 +67,7 @@
 \maketitle
 %
 \begin{abstract}
-
+In this article we present the supervised iterative projections and rotations (\Acronym{s-ipr}) algorithm, a method for learning discriminative incoherent subspaces from data. We derive \Acronym{s-ipr} as a supervised extension of our previously developed iterative projections and rotations (\Acronym{ipr}) algorithm for incoherent dictionary learning, and we employ it to learn incoherent sub-spaces that model signals belonging to different classes. We test our method as a feature transform for supervised classification, first by visualising transformed features from a synthetic dataset and from the `iris' dataset, then by using the resulting features in a classification experiment. While the visualisation results are promising, we find that \Acronym{s-ipr} generally performs worse than traditional and state-of-the-art techniques for supervised dimensionality reduction in terms of the misclassification ratio.
 \end{abstract}
 %
 %\begin{keywords}
@@ -91,9 +93,7 @@ To compute the dictionary, the eigenvalue decomposition of the outer product
 \begin{equation}
 \Matrix{X}\Transpose{\Matrix{X}} = \Matrix{Q}\Matrix{\Lambda}\Transpose{\Matrix{Q}}
 \end{equation}
-is first calculated. Then, the $\nComponents$ eigenvectors corresponding to the $\nComponents$ largest eigenvalues are selected from the matrix $\Matrix{Q}$, and scaled to unit $\ell_{2}$ norm to form the dictionary $\Dic$.
-
-Let $\Spa\definition\Dic_{1:\nComponents}\in\ambient^{\nDim\times\nComponents}$ denote the sub-dictionary constructed from the $\nComponents<\nDim$ principal components of the dataset. A new set of transformed features $\newFea_{\Acronym{pca}} = \Spa\Transpose{\Spa}\fea$ is computed by projecting the data onto the sub-space spanned by the columns of $\Dic_{1:\nComponents}$ (that is, onto the $\nComponents$-dimensional principal sub-space). This operation reduces the dimensionality of the features by projecting them onto a linear subspace embedded in $\real^{\nDim}$. It is an unsupervised technique that does not exploit knowledge about the classes associated with the training set, but implicitly relies in the assumption that the principal component directions encode relevant differences between classes.
+is first calculated. Then, the $\nComponents$ eigenvectors corresponding to the $\nComponents$ largest eigenvalues are selected from the matrix $\Matrix{Q}$, and scaled to unit $\ell_{2}$ norm to form the dictionary $\Dic$. A new set of transformed features $\newFea_{\Acronym{pca}} = \Dic\Transpose{\Dic}\fea$ is computed by projecting the data onto the sub-space spanned by the columns of $\Dic$ (that is, onto the $\nComponents$-dimensional principal sub-space). This operation reduces the dimensionality of the features by projecting them onto a linear subspace embedded in $\real^{\nDim}$. It is an unsupervised technique that does not exploit knowledge about the classes associated with the training set, but implicitly relies in the assumption that the principal component directions encode relevant differences between classes.
 
 \subsubsection{\Acronym{lda}}
 In contrast, \Acronym{lda} is a supervised method for feature transform whose objective is to explicitly maximise the separability of classes in the transformed domain. 
@@ -118,28 +118,26 @@ To maximise an objective function $\objective(\Matrix{W})\definition\frac{\abs{\
 is computed, and the features $\fea$ are projected onto the space spanned by its $(\nUniCat-1)$ eigenvectors corresponding to the largest $(\nUniCat-1)$ eigenvalues.
 
 \Acronym{lda} explicitly seeks to enhance the discriminative power of features by optimising the objective $\objective$.
-\subsection{Supervised dimensionality reduction}
-\subsubsection{Supervised PCA}
-Related works that extend \Acronym{pca} include the supervised \Acronym{pca} (\Acronym{s-pca}) proposed by Barshan et al. \cite{Barshan2011Su}. \Acronym{s-pca} is based on the theory of reproducing kernel Hilbert spaces (\Acronym{rkhs}) (that are spaces of functions which satisfy certain properties and map elements from an arbitrary set to the set of complex numbers) \cite{Aronszajn:1950}, and on the so-called Hilbert-Schmidt independence criterion (\Acronym{hsic})\cite{gretton2005measuring}. The \Acronym{hsic} is used to estimates the statistical dependence of two random variables based on the fact that this quantity is related to the correlation of functions belonging to their respective \Acronym{rkhs}. While \Acronym{hsic} is defined in terms of the probability density function of the two random variables,  empirical estimates of \Acronym{hsic} can be obtained from finite sequences of their realisations. The empirical \Acronym{hsic} can be used in turn to construct an objective function that maximises the dependence between the two variables. Hence, this strategy is adopted within the context of classification to maximise the statistical dependence between a transformed feature $\newFea_{\Acronym{s-pca}}$ and its corresponding category $\cat$.
+\subsection{Supervised \Acronym{pca}}
+Related works that extend \Acronym{pca} include the supervised \Acronym{pca} (\Acronym{s-pca}) proposed by Barshan et al. \cite{Barshan2011Su}. \Acronym{s-pca} is based on the theory of reproducing kernel Hilbert spaces (\Acronym{rkhs}) (that are spaces of functions which satisfy certain properties and map elements from an arbitrary set to the set of complex numbers) \cite{Aronszajn:1950}, and on the so-called Hilbert-Schmidt independence criterion (\Acronym{hsic})\cite{gretton2005measuring}. The \Acronym{hsic} is used to estimate the statistical dependence of two random variables based on the fact that this quantity is related to the correlation of functions belonging to their respective \Acronym{rkhs}. While \Acronym{hsic} is defined in terms of the probability density function of the two random variables,  empirical estimates of \Acronym{hsic} can be obtained from finite sequences of their realisations. The empirical \Acronym{hsic} can be used in turn to construct an objective function that maximises the dependence between the two variables. Hence, this strategy is adopted within the context of classification to maximise the statistical dependence between a transformed feature $\newFea_{\Acronym{s-pca}}$ and its corresponding category $\cat$.
 
 In practice, \Acronym{s-pca} differs from \Acronym{pca} in that it calculates the eigenvalue decomposition of a matrix $\Matrix{R}$ defined as follows:
 \begin{equation}
 \Matrix{R} \definition \Matrix{X}\Matrix{H}\Matrix{L}\Matrix{H}\Transpose{\Matrix{X}}
 \end{equation}
-were $\Matrix{H} \definition \Matrix{I} - \Vector{e}\Transpose{\Vector{e}}$ is a \emph{centring} matrix and $\Matrix{L} \definition \Vector{\cat}\Transpose{\Vector{\cat}}$ is the kernel matrix of the class variable that is constructed by computing the outer product of the vectors resulting from assigning different numerical values to each category. 
+were $\Matrix{H} \definition \Matrix{I} - \Vector{e}\Transpose{\Vector{e}}$ is a so-called \emph{centring} matrix\footnote{Here $\Vector{e}$ is a vector of ones.} and $\Matrix{L} \definition \Vector{\cat}\Transpose{\Vector{\cat}}$ is the kernel matrix of the class variable that is constructed by computing the outer product of the vectors resulting from assigning different numerical values to each category. 
 
-Other methods for supervised dimensionality reduction include metric learning algorithms \cite{xing2002distance}, sufficient dimensionality reduction \cite{li1991sliced} and supervised principal components \cite{Bair06predictionby}.
+\subsection{Other related work}
+The union of incoherent sub-spaces model proposed by Schnass and Vandergheynst \cite{Schnass2010A-} employes a very similar intuition to the one that inspired our proposed method, and models features belonging to different classes using incoherent subspaces. 
 
-\subsection{Incoherent subspace learning and other related work}
+Other methods for supervised dimensionality reduction include metric learning algorithms \cite{xing2002distance}, sufficient dimensionality reduction \cite{li1991sliced} and Bair's supervised principal components \cite{Bair06predictionby}.
 
+Manifold learning techniques are used to model nonlinear data and reviewed by Van Der Maaten et al. \cite{Van-Der-Maaten2009Di}. Finally,  the sparse sub-space clustering technique developed by Elhamifar and Vidal \cite{Elhamifar2013Sp} that applies concepts and algorithm from the field of sparse approximation to tackle unsupervised clustering problems.
 
-and methods for manifold learning reviewed by Van Der Maaten et al. \cite{Van-Der-Maaten2009Di}. Finally, the sparse sub-space clustering technique developed by Elhamifar and Vidal \cite{Elhamifar2013Sp} applies concepts and algorithm from the field of sparse approximation to tackle unsupervised clustering problems.
+\subsection{Paper organisation}
+The method proposed in this paper is aimed at learning discriminative sub-spaces that allow dimensionality reduction, while at the same time enhancing the separability between classes. It is derived from our previous work on learning incoherent dictionaries for sparse approximation \cite{Barchiesi2013Le}.
 
-
-\subsection{Main Contributions and Paper organisation}
-The method proposed in this paper is aimed at learning discriminative sub-spaces that allow dimensionality reduction, while at the same time enhancing the separability between classes. It is derived from our previous work on learning incoherent dictionaries for sparse approximation.
-
-Standard methods for feature transform will be briefly reviewed in Section \ref{sec:aft}, as their limitations lead to the main motivation for this work. To provide the context of the proposed method, the incoherent dictionary learning problem will be introduced in Section \ref{sec:idl}, while Section \ref{sec:lis} will contain the main contribution of this paper consisting in learning incoherent subspaces for classification. Numerical experiments are presented in Section \ref{sec:ne}, and conclusions are drawn in Section \ref{sec:end}.
+The incoherent dictionary learning problem will be introduced in Section \ref{sec:idl}, while Section \ref{sec:lis} will contain the main contribution of this paper consisting in learning incoherent subspaces for classification. Numerical experiments are presented in Section \ref{sec:ne}, and conclusions are drawn in Section \ref{sec:end}.
 
 \section{Incoherent Dictionary Learning}\label{sec:idl}
 A sparse approximation of a signal $\fea\in\real^{\nDim}$ is a linear combination of $\nAto\geq\nDim$ basis functions $\curlyb{\atom_{\iAto}\in\real^{\nDim}}_{\iAto=1}^{\nAto}$ called \emph{atoms} described by:
@@ -333,72 +331,81 @@ The subspace $\optimal{\iCat}$ can be directly used as an estimator of the categ
 \begin{equation}
 \optimal{\cat} = \texttt{knn}(\newFea,\NewFeas,\cats)
 \end{equation}
-where $\NewFeas$ represents the matrix of training features after the transform stage. This latter approach is especially suitable when working with a large number of classes in a space of relatively small dimension (as in the numerical experiment presented in Section \ref{sec:fisher} where $\nCat=3$ and $\nDim=3$), as in this case multiple classes might be assigned to the same subspace.
+where $\NewFeas$ represents the matrix of training features after the transform stage. This latter approach is especially suitable when working with a large number of classes in a space of relatively small dimension, as in this case multiple classes might be assigned to the same subspace.
 \section{Numerical Experiments}\label{sec:ne}
-\subsection{Feature visualisation}
+\subsection{Feature visualisation}\label{sec:visu}
 To illustrate the \Acronym{s-ipr} algorithm for feature transform, we first run visualisation experiments depicting how different feature transform methods act on training and test data.
 \subsubsection{Synthetic data}
-Figure \ref{fig:toy} displays a total of $1500$ synthetic features in $\real^{2}$ belonging to $3$ different classes that we generated for this experiment. For each class, first we draw values distributed uniformly in the interval $\squareb{-1,1}$ and assign them to the first component of the features (the \emph{x} coordinate). Then, we add Gaussian noise with variance $0.1$ to the second component (the \emph{y} coordinate), and we rotate the resulting data by the angles $\theta_{0}=0$, $\theta_{1}=\pi/4$ and $\theta_{3}=\pi/2$ for the $3$ classes respectively. This way, features belonging to different classes are clustered along different one-dimensional sub-spaces of $\real^{2}$.
 \begin{figure}
-\includegraphics[width=\textwidth]{./Code/Datasets/GetToyExampleDataset.pdf}
+\centering
+\includegraphics[width=.6\textwidth]{./Code/Datasets/GetToyExampleDataset.pdf}
 \caption{\label{fig:toy}Synthetic data generated along one-dimensional subspaces of $\real^{2}$.}
 \end{figure}
-
-Figure
+Figure \ref{fig:toy} displays a total of $1500$ synthetic features in $\real^{2}$ belonging to $3$ different classes that we generated for this experiment. For each class, first we draw values distributed uniformly in the interval $\squareb{-1,1}$ and assign them to the first component of the features (the \emph{x} coordinate). Then, we add Gaussian noise with variance $0.1$ to the second component (the \emph{y} coordinate), and we rotate the resulting data by the angles $\theta_{0}=0$, $\theta_{1}=\pi/4$ and $\theta_{3}=\pi/2$ for the $3$ classes respectively. This way, features belonging to different classes are clustered along different one-dimensional sub-spaces of $\real^{2}$.
 \begin{figure}
 \includegraphics[width=\textwidth]{./Code/toyvisu.pdf}
 \caption{\label{fig:toyNewFea}Feature transform applied to the synthetic data in Figure \ref{fig:toy}. Different colours correspond to different classes, `+' and `o' markers represent samples taken from the training and test set respectively.}
 \end{figure}
+
+Figure \ref{fig:toyNewFea} displays the result of the application of feature transforms to the data depicted in Figure \ref{fig:toy} using subspaces of dimension $1$ (with the exception of \Acronym{lda} that projects the data onto a space of dimension $\nUniCat-1=2$). To generate the plots, we divided the data into a training set (displayed using the `+' marker) and a test set (displayed using the `o' marker). Samples were drawn in random order from the dataset and assigned to either the training set or the test set, with the former containing $70\%$ of the total data and the latter containing the remaining $30\%$. Then, we applied feature transforms on the training set, thereby learning the transform operators, and applied them to the test set. 
+
+Starting from the top-left plot, we can observe that \Acronym{PCA} identified the direction $x=y$ as the one-dimensional subspace that contains most of the variance of the training set. However, given the type of dataset and the dimensionality reduction caused by \Acronym{pca}, features from all classes are overlapping, making this transform a poor choice for classification. Similar observations can be drawn from analysing the result of \Acronym{s-pca}, although this transform identifies the direction $y=0$ as the one that leads to statistical dependence between the value of the transformed features in the training set and the relative class. \Acronym{lda} does not introduce any dimensionality reduction in this case, as it projects the features onto a space of dimension $\nUniCat-1=2$, leaving the original features unaltered. However, in the \Acronym{lda} plot we can appreciate the separation between training set and test set that is difficult to notice in the other plots. 
+
+Finally, the plot at the right-bottom corner of Figure \ref{fig:toyNewFea} displays the results of the \Acronym{s-ipr} algorithm. In setting the parameters of \Acronym{s-ipr}, we chose a $2$ times over-complete dictionary, a number of active atoms equal to half the dimension of the data, and minimal mutual coherence. In the case considered here, this means $\nAto = 4$, $\nActiveAtoms = 1$ and $\coherence = \sqrt{(\nAto-\nDim)/\nDim(\nAto-1)} \approx 0.33$. As discussed in Section \ref{sec:iprclass}, \Acronym{s-ipr} does not project whole sets of features onto a unique sub-space, but rather learns one sub-space for each category, and projects features onto the nearest sub-space. The result depicted here shows that three directions were identified containing data from mostly one category each. Since the incoherent dictionary learning is designed to learn atoms with minimal mutual coherence, the angles between the directions of the sub-spaces learned by \Acronym{s-ipr} are approximately equal. Prior information regarding the directions of the data would allow to relax the parameter $\coherence$, and track more closely the directions of the three data classes.
+
 \subsubsection{Iris dataset}
 \begin{figure}
-\includegraphics[width=\textwidth]{./Code/Datasets/GetFisherIrisDataset.pdf}
-\caption{\label{fig:fisher3} First three features of the `iris' dataset depicting measurements of sepal length, sepal with and petal length of three iris species.}
+\centering
+\includegraphics[width=0.6\textwidth]{./Code/Datasets/GetFisherIrisDataset.pdf}
+\caption{\label{fig:fisher3} First three features of the `iris' dataset depicting measurements of sepal length, sepal width and petal length of three iris species.}
 \end{figure}
+Figure \ref{fig:fisher3} displays a subset of the `iris' dataset, a popular database that has been used extensively to test and benchmark classification algorithms. The original dataset contains measurements of the sepal length, sepal width, petal length and petal width of three species of iris, namely `setosa', `versicolor' and `virginica'. In this visualisation experiment we selected the first $3$ features to be able to depict the data using three dimensional scatter plots. From observing the distribution of the data in the feature space, we see that `setosa' is relatively separated from the other two classes, while the features relative to `virginica' and `versicolor' substantially overlap, with only a few exemplars of `virginica' being distinguishable due to large sepal length and petal length.
 \begin{figure}
-\includegraphics[width=\textwidth]{./Code/fishervisu.pdf}
-\caption{\label{fig:toyNewFea}Feature transform applied to the iris data in Figure \ref{fig:fisher3}. Different colours correspond to different classes, `+' and `o' markers represent samples taken from the training and test set respectively.}
+\includegraphics[width=\textwidth]{./Code/fishervisu.eps}
+\caption{\label{fig:fisher3NewFea}Feature transform applied to the iris data in Figure \ref{fig:fisher3}. Different colours correspond to different classes, `+' and `o' markers represent samples taken from the training and test set respectively.}
 \end{figure}
 
-\subsection{Classification results}
+The results of feature transforms are depicted in Figure \ref{fig:fisher3NewFea}. This time, we learn $2$ dimensional subspaces from the $3$ dimensional data points and plot the transformed features, along with the learned planes. We observe that \Acronym{pca} identifies a direction along a diagonal axis that follows the distribution of features displayed in Figure \ref{fig:fisher3}. \Acronym{s-pca}
+, on the other hand, projects the features onto a horizontal plane that slightly enhances the separation between `versicolor' and `virginica' samples. \Acronym{lda} results in a projection where features belonging to the same category are closely clustered together, but fails to separate the classes `versicolor' and `virginica'. Finally, the output of \Acronym{s-ipr} displays three distinct sub-spaces associated with the three classes. As in the other plots, the separation between `versicolor' and `virginica' is far from perfect, however features from the  two classes are mostly projected onto the respective sub-spaces. Features belonging to the `setosa' category are mostly clustered together as a result of their projection onto the black subspace, however we can note a few test samples that have been associated by the algorithm to the blue sub-space.
+\subsection{Classification}\label{sec:cla}
+\begin{table}
+\centering
+\begin{tabular}{lccc}\textbf{Name} & \nDim & \nUniCat & \nFea \\
+\hline 
+Iris & 4 & 3 & 150\\
+Balance & 4 & 3 & 625\\
+Parkinsons & 23 & 2 & 197 \\
+Sonar & 60 & 2 & 208\\
+USPS & 256 & 3 & 1405
+\end{tabular}
+\caption{\label{tab:datasets}Dataset used in the classification evaluation of feature transform algorithms. All the datasets can be downloaded from \href{http://archive.ics.uci.edu/ml/datasets.html}{http://archive.ics.uci.edu/ml/datasets.html}. Note that we only use a subset of the USPS dataset containing the digits $1$, $3$ and $8$.}
+\end{table}
+
+In the previous section, we have illustrated how the \Acronym{s-ipr} algorithm is able to learn incoherent sub-spaces that model the distribution of features belonging to different classes. Here we evaluate \Acronym{s-ipr} and the other feature transform algorithms in the context of supervised classification. To perform the classification, features are transformed using the methods already used for comparison in Section \ref{sec:visu} by learning a transform operator on the training set and applying it to the test set. We use a $5$-fold stratified cross-validation to classify all the features in a dataset during the test stage. This method produces $5$ independent classification problems with a ratio between the number of training and test samples equal to $8:2$. Once the features have been transformed, a $k$-nearest neighbour classifier with $k=5$ is used to estimate a class. 
+
+We employ the datasets detailed in Table \ref{tab:datasets}, and for each of them we evaluate the misclassification ratio, that is defined as the fraction of misclassified samples as a proportion of the total number of samples in the test set, averaged over the $5$ independent classification problems created by the stratified cross-validation protocol.
 \begin{figure}
 \centering
 \subfigure{\includegraphics[width=.45\textwidth]{Code/Util/fisheriris.pdf}}
 \subfigure{\includegraphics[width=.45\textwidth]{Code/Util/balance.pdf}}
 \subfigure{\includegraphics[width=.45\textwidth]{Code/Util/parkinsons.pdf}}
 \subfigure{\includegraphics[width=.45\textwidth]{Code/Util/sonar.pdf}}
-\caption{}
+%\subfigure{\includegraphics[width=.45\textwidth]{Code/Util/usps.pdf}}
+\caption{\label{fig:class} Classification results.}
 \end{figure}
 
-\subsection{Classifying the \Acronym{fisheriris} dataset}\label{sec:fisher}
-To illustrate the \Acronym{s-ipr} algorithm for feature transform, we apply it to the $\Acronym{fisheriris}$ dataset \cite{Fisher1936Th}. This contains data for the classification of $150$ iris specimens into the classes \emph{setosa}, \emph{versicolor} and \emph{virginica}. The features corresponding to measurements on the sepal length, sepal width and petal length for the flowers are stored in the matrix $\Feas\in\ambient^{3\times 150}$.  As a pre-processing step, we subtract the mean and normalise the standard deviation of the features to avoid large variations or offsets in any of the dimensions of the data.
+Figure \ref{fig:class} displays for each dataset the misclassification ratio as a function of the rank of the subspace learned by the algorithms. In the plots `none' indicates that no feature transform was applied (hence resulting in a sub-space rank equal to the dimension of the original features). In general we can see that \Acronym{s-ipr} does not perform as well as the other techniques, and is only comparable at high ranks that do not achieve an overall better classification ratio. Starting from the `iris' dataset, \Acronym{lda} achieves the best performance followed by one-dimensional subspaces learned using \Acronym{pca}. Both \Acronym{s-pca} and \Acronym{s-ipr} work better when learning subspaces of high rank. Note that, at rank $\nDim=4$ all the methods are equivalent because they are not performing dimensionality reduction. The results relative to the balance dataset are similar, with again \Acronym{lda} achieving the best misclassification ratio. Although the results on the `Parkinsons' and `sonar' datasets present similar trends regarding \Acronym{s-ipr}, here \Acronym{lda} does not prove to be as successful as \Acronym{pca} and \Acronym{s-pca} in separating features belonging to different classes. 
 
-The dictionary learning is run using the \Acronym{SMALLBox} toolbox and the Incoherent dictionary learning add-on\footnote{http://code.soundsoftware.ac.uk/projects/smallbox.}. We learn an over-complete dictionary $\Dic$ consisting of $\nAto=10$ atoms and a sparse approximation $\Coeff$ that uses $\nActiveAtoms=2$ active atoms for each signal. Incoherent sub-dictionaries are learned by the \Acronym{s-ipr} method, setting the mutual coherence to the theoretical lower bound attainable by a $\nDim\times \nAto$ dictionary $\mu_{\Label{min}} = \sqrt{(\nAto-\nDim)/\nDim(\nAto-1)}\approx 0.5$ \cite{Strohmer2003Gr}. A maximum number of $\nIter=20$ iterations is set as the stopping criterion. These parameters are within the range used in previous studies of incoherent dictionary learning \cite{Barchiesi2013Le}, and have not been optimised for this task.
-
-The proposed method is used to learn $\nDimSub=1$ dimensional sub-spaces, and is  compared to \Acronym{pca} with a number of components $\nComponents=2$ and to \Acronym{lda}. Figure \ref{fig:fisher} shows the results of the experiment. The original features show a clear cluster corresponding to the setosa class, and overlapping data for the other two classes. Applying \Acronym{pca} reduces the dimensionality of the $3$-dimensional features to a rank $2$ principal sub-space, but worsens the separation between classes. Both \Acronym{lda} and the proposed method are able to improve the separation of the three classes, but in remarkably different ways: while the former optimises the linear separability of different classes, features derived from \Acronym{s-ipr} are projected onto low-dimensional discriminative subspaces.
-
-To assess the classification performance of the various techniques, we created a random $5$-fold partition of the training set used for cross-validation, and classified the transformed features using \Acronym{knn} with $5$ neighbours. The misclassification rate $\Acronym{mcr}$ defined as the number of misclassified samples divided by the total number of samples is displayed for the various methods in the first row of Table \ref{tab:fisher}. \Acronym{s-ipr} and \Acronym{lda} are both able to attain a $7\%$ misclassification error, improving on the $10\%$ obtained on the original features. The worst result is achieved by \Acronym{pca}, whose dimensionality reduction has the effect of mixing together features belonging to different classes, and achieves an error of $44\%$.
-
-\begin{table}[!htb]
-\begin{center}
-\begin{tabular}{|l|c|c|c|c|}
-\hline
-  & none & \Acronym{pca} & \Acronym{lda} & \Acronym{s-ipr} \\
-  \hline
-  \textbf{\Acronym{mcr} - \Acronym{fisheriris}} & 0.10 & 0.44 & 0.07 & 0.07\\
-\textbf{\Acronym{mcr} - \Acronym{usps}} & 0.343 & 0.433 & 0.359 & 0.315 \\
-\hline
-\end{tabular}
-\caption{\label{tab:fisher} Misclassification error evaluated using different feature transform methods on the \Acronym{fisheriris} and \Acronym{usps} datasets (none indicates no feature transform).}
-\end{center}
-\end{table}
-\subsection{Classification of the \Acronym{usps} digits dataset}
-In order to evaluate the proposed method on a more challenging dataset that  contains signals of higher dimension, we run a similar experiment on the \Acronym{usps} digits dataset, which consists of a collection of $16\times 16$ pixels images of hand-written digits \footnote{http://www.cs.nyu.edu/~roweis/data.html.}. We selected the digits \Acronym{1}, \Acronym{3} and \Acronym{8} resulting in a total of $1405$ examples stored in the matrix $\Feas\in\ambient^{256\times 1405}$.
-
-We investigated the effect of the parameters \\ $\nAto=\curlyb{256,512,1024}$, $\nDimSub=\curlyb{2,4,8,16,32,64,128}$ and $\nActiveAtoms = \curlyb{2,25,128,256}$ on the misclassification error, and compared the \Acronym{s-ipr} to \Acronym{pca} and \Acronym{lda}. For \Acronym{pca}, the number of principal components $\nComponents$ is automatically set by the algorithm to choose an approximation that retains $95\%$ of the variance of the data. The second row of Table \ref{tab:fisher} shows the results obtained with the best choice of parameters $\optimal{\nAto}=512$ (corresponding to a 2 times over-complete dictionary), $\optimal{\nDimSub}=64$ and $\optimal{\nActiveAtoms}=128$. In this case, \Acronym{s-ipr} achieves a $31.5\%$ misclassification error, while the other two techniques do not improve the \Acronym{k-nn} classification on to the original features, which scores $34.3\%$. 
-
-Analysing the \Acronym{mcr} as a function of the parameters $\nAto$, $\nDimSub$ and $\nActiveAtoms$, the most relevant trend observed empirically on this dataset is that a value $\nDimSub<16$ steeply increases the misclassification error. This suggests that the dimensionality of the incoherent sub-spaces must be large enough to retain discriminative characteristics of the original high-dimensional data. The dependency of \Acronym{mcr} on the other two parameters is less significant, suggesting that dictionary learning leads to discriminative subspaces regardless of the number of active atoms $\nActiveAtoms$ or the number of atoms in the dictionary $\nAto$. 
 \section{Conclusion}\label{sec:end}
-We have presented the \Acronym{s-ipr} algorithm for learning incoherent subspaces, and employed it as a feature transform method in the context of supervised classification. The encouraging experimental results obtained on the \Acronym{fisheriris} and the \Acronym{usps} datasets suggest that the proposed algorithm can overcome limitations of standard feature transforms methods, making it a viable tool for machine learning research and practice. A better theoretical understanding of the performance of \Acronym{s-ipr} (especially in relation to other methods for subspace and manifold learning), and further validations of the technique on challenging classification problems constitute the most promising avenues for future research.
+\subsection{Summary}
+We have presented the \Acronym{s-ipr} algorithm for learning incoherent subspaces from data belonging to different categories. The encouraging experimental results obtained on the visualisation of the synthetic dataset and of a subset of features taken from the 'iris` dataset motivated us to test \Acronym{s-ipr} as a general method for feature transform to be used in classification problems. Unfortunately, we found that the performance of our proposed method on a group of datasets commonly used to benchmark classification methods is not competitive compared to traditional and state-of-the-art methods for feature transform. 
+
+The negative results presented in Section \ref{sec:cla} do not imply that \Acronym{s-ipr} is completely unsuitable as a tool for modelling data for classification, but they rather open a few important areas of future research that should be investigate to better understand the strengths and limitations of the proposed method.
+
+\subsection{Future work}
+The main assumption made when using incoherent dictionary learning for classification is that high dimensional features are arranged onto lower-dimensional sub-spaces, and that features belonging to different classes can be modelled using different subspaces that are mutually incoherent. This assumption might be met by some datasets, but might not generally be satisfied by others. Understanding the general distribution of the features in a  dataset might be a necessary first step to inform a subsequent choice of algorithm, so that \Acronym{s-ipr} is only used in cases where its premise about the feature distribution is valid. This same argument holds for the whole class of linear models that comprises the dictionary learning model. Indeed, many feature transform techniques have equivalent kernelized versions to model non-linear data.
+
+Other substantial improvements can be made on the algorithm itself. The present implementation of \Acronym{s-ipr} contains a fixed parameter $\coherence$ that promotes minimal mutual coherence between the sub-spaces used to approximate different data classes. Knowledge about the distribution of the features might lead to relaxing this parameter, learning sub-spaces that are closer to the true distribution of the features and in turn improving class separation. Moreover, different values of mutual coherence for different pairs of subspaces can be easily included in the optimisation, greatly enhancing the flexibility of \Acronym{s-ipr} as a modelling tool.
 
 \bibliographystyle{IEEEbib}
 \bibliography{bibliography.bib}

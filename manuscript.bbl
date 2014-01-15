@@ -28,6 +28,31 @@ Arthur Gretton, Olivier Bousquet, Alex Smola, and Bernhard Sch{\"o}lkopf,
 \newblock ``Measuring statistical dependence with hilbert-schmidt norms,''
 \newblock in {\em Algorithmic learning theory}. Springer, 2005, pp. 63--77.
 
+\bibitem{Schnass2010A-}
+Karin Schnass and Pierre Vandergheynst,
+\newblock ``A union of incoherent spaces model for classification,''
+\newblock in {\em Proceedings of the IEEE International Conference on
+  Acoustics, Speech and Signal Processing (ICASSP)}, Mar. 2010, pp. 5490--5493.
+
+\bibitem{xing2002distance}
+Eric~P Xing, Michael~I Jordan, Stuart Russell, and Andrew Ng,
+\newblock ``Distance metric learning with application to clustering with
+  side-information,''
+\newblock in {\em Advances in neural information processing systems}, 2002, pp.
+  505--512.
+
+\bibitem{li1991sliced}
+Ker-Chau Li,
+\newblock ``Sliced inverse regression for dimension reduction,''
+\newblock {\em Journal of the American Statistical Association}, vol. 86, no.
+  414, pp. 316--327, 1991.
+
+\bibitem{Bair06predictionby}
+Eric Bair, Debashis Paul, and Robert Tibshirani,
+\newblock ``Prediction by supervised principal components,''
+\newblock {\em Journal of the American Statistical Association}, vol. 101, pp.
+  119--137, 2006.
+
 \bibitem{Van-Der-Maaten2009Di}
 L.~Van Der~Maaten, E.~Postma, and J.~Van Den~Herik,
 \newblock ``Dimensionality reduction: {A} comparative review,''
@@ -56,17 +81,5 @@ D.~Barchiesi and M.~D. Plumbley,
   iterative projections and rotations,''
 \newblock {\em IEEE Trans. on Signal Processing}, vol. 61, no. 8, pp.
   2055--2065, Apr. 2013.
-
-\bibitem{Fisher1936Th}
-R.~A. Fisher,
-\newblock ``The use of multiple measurements in taxonomic problems,''
-\newblock {\em Annuals of Eugenics}, vol. 7, pp. 179--188, 1936.
-
-\bibitem{Strohmer2003Gr}
-T.~Strohmer and R.~W.~Jr. Heath,
-\newblock ``Grassmannian frames with applications to coding and
-  communication,''
-\newblock {\em Applied and Computational Harmonic Analysis}, vol. 14, no. 3,
-  pp. 257--275, 2003.
 
 \end{thebibliography}
