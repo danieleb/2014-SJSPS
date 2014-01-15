@@ -64,6 +64,13 @@ E.~Elhamifar and R.~Vidal,
 \newblock To appear in IEEE Transactions on Pattern Analysis and Machine
   Intelligence, 2013.
 
+\bibitem{Barchiesi2013Le}
+D.~Barchiesi and M.~D. Plumbley,
+\newblock ``Learning incoherent dictionaries for sparse approximation using
+  iterative projections and rotations,''
+\newblock {\em IEEE Trans. on Signal Processing}, vol. 61, no. 8, pp.
+  2055--2065, Apr. 2013.
+
 \bibitem{Elad2010Sp}
 M.~Elad,
 \newblock {\em Sparse and redundant representations},
@@ -74,12 +81,5 @@ R.~Rubinstein, A.~Bruckstein, and M.~Elad,
 \newblock ``Dictionaries for sparse representation modeling,''
 \newblock {\em Proceedings of the IEEE}, vol. 98, no. 6, pp. 1045--1057, Jun.
   2010.
-
-\bibitem{Barchiesi2013Le}
-D.~Barchiesi and M.~D. Plumbley,
-\newblock ``Learning incoherent dictionaries for sparse approximation using
-  iterative projections and rotations,''
-\newblock {\em IEEE Trans. on Signal Processing}, vol. 61, no. 8, pp.
-  2055--2065, Apr. 2013.
 
 \end{thebibliography}

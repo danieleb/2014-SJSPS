@@ -37,6 +37,6 @@ for iDat=1:length(datasets)
         fprintf('done\n');
     end
     mcrs = [res(iDat,:).mcr]';
-    figure, PlotMCRs(mcrs,subSpaRanks,datasets{iDat});
+    figure, PlotMCRs(mcrs,subSpaRanks,length(unique(cat)),datasets{iDat});
 end
 
